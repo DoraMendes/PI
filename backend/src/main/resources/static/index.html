@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction Viewer</title>
+</head>
+<body>
+<h1>Prediction Results</h1>
+<div id="predictions"></div>
+<script>
+    var ws = new WebSocket('ws://192.168.1.202:8080/ws');
+    ws.onopen = function() {
+        console.log('WebSocket connection established');
+    };
+    ws.onmessage = function(event) {
+        console.log("Message received: ", event.data);
+        var log = document.getElementById('predictions');
+        if (log) {
+            log.innerHTML += '<br>' + event.data;
+        } else {
+            console.error('No element with ID predictions found.');
+        }
+    };
+    ws.onerror = function(error) {
+        console.error('WebSocket Error: ', error);
+    };
+    ws.onclose = function(event) {
+        console.log('WebSocket connection closed', event);
+    };
+</script>
+</body>
+</html>

@@ -8,6 +8,6 @@ public class HelloRestImpl
 {
   @GetMapping("/")
   public String index() {
-    return "Greetings from Spring Boot!";
+    return "Home";
   }
 }
