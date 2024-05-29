@@ -19,7 +19,7 @@ tsharkProcess = subprocess.Popen([
 ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 # tensorflow carrega o modelo
-new_model = tf.keras.models.load_model('model.h5', compile = False)
+new_model = tf.keras.models.load_model('model_multiclass.h5', compile = False)
 
 # 25 campos que modelo binário quer:
 # http.content_length
@@ -176,7 +176,7 @@ for x in iter(tsharkProcess.stdout.readline, ""):
     # Number(value.http?.['http.time']),
     # Number(value.ip?.['ip.frag_offset']),
 
-# new_model = tf.keras.models.load_model('model.h5')
+# new_model = tf.keras.models.load_model('model_multiclass.h5')
 
 # for z in pd.read_csv(tsharkProcess.stdout, iterator=True, chunksize=1):
 #     print(float(z['http.response.code'].iloc[0]))

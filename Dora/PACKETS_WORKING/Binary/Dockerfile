@@ -35,9 +35,9 @@ RUN pip3 install tensorflow pandas scipy
 
 RUN apt install curl unzip -y
 WORKDIR /app
-COPY model.h5 model.h5
-COPY 1.py 1.py
+COPY model_binary.h5 model_binary.h5
+COPY execute_binary.py execute_binary.py
 
 RUN pip3 install ijson
 
-ENTRYPOINT ["python3", "1.py"]
+ENTRYPOINT ["python3", "execute_binary.py"]
