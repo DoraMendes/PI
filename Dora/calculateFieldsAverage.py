@@ -1,5 +1,6 @@
 import csv
 
+# we need to have this file locally - to big to commit and push it to git (limit of 2GB)
 file1 = '/Users/dora.mendes/Downloads/Dataset & Captures/Datasets/IP-Based/Packets/IP-Based Packets Dataset.csv';
 with open(file1, newline='') as csvfile:
     reader = csv.reader(csvfile)
@@ -100,6 +101,7 @@ with open(file1, newline='') as csvfile:
 # Average coap.type_1: 0.78
 
 
+# we need to have this file locally - to big to commit and push it to git (limit of 2GB)
 file2 = '/Users/dora.mendes/Downloads/Dataset & Captures/Datasets/IP-Based/Packets/IP-Based Packets Pre-Processed Dataset.csv';
 with open(file2, newline='') as csvfile:
     reader = csv.reader(csvfile)
