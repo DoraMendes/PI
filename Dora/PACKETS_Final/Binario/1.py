@@ -111,9 +111,9 @@ for x in iter(tsharkProcess.stdout.readline, ""):
 
         # descobrir o valor do campo tcp_tcp_analysis_initial_rtt
         # print([y['layers']['tcp']['tcp_tcp_analysis_initial_rtt']])
-        print([y['layers']['eth']['eth_eth_src_lg']])
+        # print([y['layers']['eth']['eth_eth_src_lg']])
         # print([y['layers']['eth']['eth_eth_src_not_group']])
-        print([y['layers']['arp']['arp_arp_isannouncement']])
+        # print([y['layers']['arp']['arp_arp_isannouncement']])
 
         # 23 campos
         d = {
