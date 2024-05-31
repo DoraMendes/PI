@@ -33,20 +33,20 @@ public abstract class AbstractDAOImpl<T> implements IAbstractDAO<T>
     return entityManager.createQuery(all).getResultList();
   }
 
-  public T save(T prediction) {
-    entityManager.persist(prediction);
-    return prediction;
+  public T save(T entity) {
+    entityManager.persist(entity);
+    return entity;
   }
 
-  public T update(T prediction) {
-    return entityManager.merge(prediction);
+  public T update(T entity) {
+    return entityManager.merge(entity);
   }
 
-  public void delete(T prediction) {
-    if (entityManager.contains(prediction)) {
-      entityManager.remove(prediction);
+  public void delete(T entity) {
+    if (entityManager.contains(entity)) {
+      entityManager.remove(entity);
     } else {
-      entityManager.remove(entityManager.merge(prediction));
+      entityManager.remove(entityManager.merge(entity));
     }
   }
 }
