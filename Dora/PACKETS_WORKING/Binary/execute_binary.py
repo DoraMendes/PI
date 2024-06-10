@@ -7,6 +7,49 @@ import pandas as pd
 from scipy.stats import zscore
 import json
 from scipy.stats import norm
+import threading
+import time
+import websocket
+import numpy
+import math
+
+# WebSocket functions
+def on_message(ws, message):
+    print("Received from server: " + message)
+
+def on_error(ws, error):
+    print("Error: " + str(error))
+
+def on_close(ws):
+    print("### Connection Closed ###")
+
+def on_open(ws):
+    print("Connection established.")
+
+res = json.load(open('average.json'))
+# Establish WebSocket connection
+def initiate_websocket():
+    global ws
+    websocket.enableTrace(True)
+    #url eg: ws://192.168.1.202:8080/ws
+    ws = websocket.WebSocketApp('ws://18.222.183.75:8080/ws',
+                                on_message=on_message,
+                                on_error=on_error,
+                                on_close=on_close,
+                                on_open=on_open)
+    ws.run_forever()
+
+# Start WebSocket in a new thread to keep it running in the background
+ws_thread = threading.Thread(target=initiate_websocket)
+ws_thread.daemon = True
+ws_thread.start()
+
+# Give some time for the WebSocket connection to establish
+time.sleep(1)
+
+# Load the specified model
+
+
 
 # por o tcdump a correr - nao esta a fazer nada for now, é só para usar depois.
 # process = subprocess.Popen(['tcpdump', '-s', '65585', '-l'], stdout=subprocess.PIPE)
@@ -65,41 +108,9 @@ def getFieldValue(res, field, default):
     else: return float(default)
 
 # valores médios de cada campo
+
 def getAverageValue(field):
-    res = {
-        'http_http_content_length': 0.06,
-        'http_http_response_code': 0.03,
-        'http_http_response_number': 0.08,
-        'http_http_time': 0.01,
-        'tcp_tcp_analysis_initial_rtt': 0.00,
-        'tcp_tcp_completeness_fin': 0.07,
-        'tcp_tcp_completeness_syn': 0.09,
-        'tcp_tcp_completeness_syn-ack': 0.03,
-        'tcp_tcp_flags_cwr': 0.09,
-
-        'http.request': 0.08,
-        'http.response': 0.08,
-        'tcp.analysis.bytes_in_flight': 0.12,
-        'tcp.analysis.ack_rtt': 0.00,
-        'tcp.analysis.push_bytes_sent': 0.12,
-        'tcp_tcp_flags_ece': 0.09,
-        'tcp_tcp_flags_fin': -0.03,
-        'tcp_tcp_flags': -0.01,
-        'tcp_tcp_flags_res': 0.00,
-        'tcp_tcp_flags_syn': 0.03,
-        'tcp_tcp_flags_urg': 0.09,
-        'tcp_tcp_urgent_pointer': 0.09,
-
-        'ip_ip_frag_offset': 0.19,
-        
-        'eth_eth_dst_ig': 0.50,
-        'eth_eth_src_ig': 0.50,
-        'eth_eth_src_lg': 0.50,
-        'eth.src_not_group': 0.50,
-        
-        'arp.isannouncement': 0.00,
-    }
-    return res[field];
+    return res[field]['total_sum'] / res[field]['total'];
 
 # for para percorrer todos os jsons (1 json = 1 packet)
 for x in iter(tsharkProcess.stdout.readline, ""):
@@ -116,14 +127,28 @@ for x in iter(tsharkProcess.stdout.readline, ""):
         # print([y['layers']['arp']['arp_arp_isannouncement']])
 
         # 23 campos
-        d = {
-            "http.content_length": [getFieldValue(y['layers']['http'], 'http_http_content_length', getAverageValue('http_http_content_length'))],
-            "http.request": [-1.0],
-            "http.response.code": [getFieldValue(y['layers']['http'], 'http_http_response_code', getAverageValue('http_http_response_code'))],
-            "http.response_number":  [getFieldValue(y['layers']['http'], 'http_http_response_number', -1)],
-            "http.time": [getFieldValue(y['layers']['http'], 'http_http_time', getAverageValue('http_http_time'))],
+        res['http.content_length']['total'] += 1;
+        res['http.content_length']['total_sum'] += getFieldValue(y['layers']['http'], 'http_http_content_length', getAverageValue('http.content_length'));
 
-            "tcp.analysis.initial_rtt": [getFieldValue(y['layers']['tcp'], 'tcp_tcp_analysis_initial_rtt', getAverageValue('tcp_tcp_analysis_initial_rtt'))],
+        res['http.response.code']['total'] += 1;
+        res['http.response.code']['total_sum'] += getFieldValue(y['layers']['http'], 'http_http_response_code', getAverageValue('http.response.code'));
+
+        res['http.time']['total'] += 1;
+        res['http.time']['total_sum'] += getFieldValue(y['layers']['http'], 'http_http_time', getAverageValue('http.time'));
+
+        res['tcp.analysis.initial_rtt']['total'] += 1;
+        res['tcp.analysis.initial_rtt']['total_sum'] += getFieldValue(y['layers']['tcp'], 'tcp_tcp_analysis_initial_rtt', getAverageValue('tcp.analysis.initial_rtt'));
+
+        res['tcp.urgent_pointer']['std'] += math.sqrt(pow(res['tcp.urgent_pointer']['std'],2) + pow(float(y['layers']['tcp']['tcp_tcp_urgent_pointer']) - getAverageValue("tcp.urgent_pointer"), 2))
+
+        d = {
+            "http.content_length": [getFieldValue(y['layers']['http'], 'http_http_content_length', getAverageValue('http.content_length'))],
+            "http.request": [-1.0],
+            "http.response.code": [getFieldValue(y['layers']['http'], 'http_http_response_code', getAverageValue('http.response.code'))],
+            "http.response_number":  [getFieldValue(y['layers']['http'], 'http_http_response_number', -1)],
+            "http.time": [getFieldValue(y['layers']['http'], 'http_http_time', getAverageValue('http.time'))],
+
+            "tcp.analysis.initial_rtt": [getFieldValue(y['layers']['tcp'], 'tcp_tcp_analysis_initial_rtt', getAverageValue('tcp.analysis.initial_rtt'))],
             "tcp.connection.fin": [getFieldValue(y['layers']['tcp'], 'tcp_tcp_completeness_fin', -1)],
             "tcp.connection.syn": [getFieldValue(y['layers']['tcp'], 'tcp_tcp_completeness_syn', -1)],
             "tcp.connection.synack": [getFieldValue(y['layers']['tcp'], 'tcp_tcp_completeness_syn-ack', -1)],
@@ -131,20 +156,22 @@ for x in iter(tsharkProcess.stdout.readline, ""):
             "tcp.flags.cwr": [getFieldValue(y['layers']['tcp'], 'tcp_tcp_flags_cwr', -1)],
             "tcp.flags.ecn": [getFieldValue(y['layers']['tcp'], 'tcp_tcp_flags_ece', -1)], 
             "tcp.flags.fin": [getFieldValue(y['layers']['tcp'], 'tcp_tcp_flags_fin', 2)], 
-            "tcp.flags.ns": [1.0 if is_ns_flag_set(y['layers']['tcp']['tcp_tcp_flags']) else 0.0], #todo -1
+            "tcp.flags.ns": ['tcp_tcp_flags' in y['layers']['tcp'] if (1.0 if is_ns_flag_set(y['layers']['tcp']['tcp_tcp_flags']) else 0.0) else -1.0],
             "tcp.flags.res": [getFieldValue(y['layers']['tcp'], 'tcp_tcp_flags_res', -1)], 
             "tcp.flags.syn": [getFieldValue(y['layers']['tcp'], 'tcp_tcp_flags_syn', 2)],
             "tcp.flags.urg": [getFieldValue(y['layers']['tcp'], 'tcp_tcp_flags_urg', -1)],
-            "tcp.urgent_pointer": [norm.cdf([float(y['layers']['tcp']['tcp_tcp_urgent_pointer'])])], #todo 2 e zscore
+            
+            # nao posso incrementar nem a media nem o o zscore para este campo
+            "tcp.urgent_pointer": [(float(y['layers']['tcp']['tcp_tcp_urgent_pointer']) - getAverageValue("tcp.urgent_pointer")) / res['tcp.urgent_pointer']['std']], #todo 2 e zscore
 
             "ip.frag_offset":  [getFieldValue(y['layers']['ip'], 'ip_ip_frag_offset', -1)],
 
             "eth.dst.ig": [getFieldValue(y['layers']['eth'], 'eth_eth_dst_ig', -1)],
             "eth.src.ig": [getFieldValue(y['layers']['eth'], 'eth_eth_src_ig', -1)], 
             "eth.src.lg": [getFieldValue(y['layers']['eth'], 'eth_eth_src_lg', -1)],
-            "eth.src_not_group": [-1.0], #todo -1 
+            "eth.src_not_group": [getFieldValue(y['layers']['eth'], 'eth.src_not_group', -1)],
 
-            "arp.isannouncement": [-1.0], #todo -1
+            "arp.isannouncement": [-1]
         }
 
         df = pd.DataFrame(data=d)
@@ -154,6 +181,18 @@ for x in iter(tsharkProcess.stdout.readline, ""):
         a = new_model.predict(df)
         # print(a)
         print(json.dumps(a.tolist()))
+
+
+        # Correct conversion to JSON and sending via WebSocket
+        prediction_list = a.flatten().tolist()
+        json_data = json.dumps({"prediction": prediction_list})
+
+        # Send prediction to Java backend via WebSocket
+        if ws.sock and ws.sock.connected:
+            ws.send(json_data)
+        else:
+            print("WebSocket is not connected.")
+            
 
     # Number(value.tcp?.['tcp.flags_tree']?.['tcp.flags.fin_tree']?.["_ws.expert"]?.["tcp.connection.fin"]),
     # Number(value.tcp?.['tcp.flags_tree']?.['tcp.flags.syn_tree']?.["_ws.expert"]?.["tcp.connection.syn"]),
