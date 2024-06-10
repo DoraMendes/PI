@@ -21,7 +21,7 @@ public abstract class AbstractRESTImpl<T extends AbstractEntity, E> {
   protected abstract AbstractAdapter<T, E> getAdapter();
 
   @GetMapping("/{id}")
-  public ResponseEntity<E> get(@PathVariable int id) {
+  public ResponseEntity<E> get(@PathVariable long id) {
     T entity = service.findById(id);
     E dto = adapter.entityToDTO(entity);
     return ResponseEntity.ok(dto);
@@ -43,7 +43,7 @@ public abstract class AbstractRESTImpl<T extends AbstractEntity, E> {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<E> update(@PathVariable int id, @RequestBody E dto) {
+  public ResponseEntity<E> update(@PathVariable long id, @RequestBody E dto) {
     T entity = adapter.dtoToEntity(dto);
     entity.setId(id);
     T updatedEntity = service.update(entity);

@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface IAbstractDAO<T>
 {
-  T findById(int id);
+  T findById(long id);
   List<T> findAll();
   T save(T obj);
   T update(T obj);

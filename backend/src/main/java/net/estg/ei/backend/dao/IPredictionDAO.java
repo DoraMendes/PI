@@ -12,6 +12,9 @@ public interface IPredictionDAO
 {
   List<PredictionEntity> findAllWithFilters(FilterDTO filters);
   List<Object[]> countAttacksByDayLast30Days();
+
+  Long getDailyAttackCounts();
+
   List<Object[]> countAttacksVsNonAttacks();
 
   Map<AttackType, Pair<Long, Double>> calculateAttackTypePercentages();

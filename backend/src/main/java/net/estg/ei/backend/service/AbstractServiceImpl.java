@@ -13,7 +13,7 @@ public abstract class AbstractServiceImpl<T> implements IAbstractService<T>
   @Autowired
   AbstractDAOImpl<T> dao;
 
-  public T findById(int id) {return dao.findById(id);}
+  public T findById(long id) {return dao.findById(id);}
   public List<T> findAll() {return dao.findAll();}
   @Transactional
   public T save(T obj) {return dao.save(obj);}

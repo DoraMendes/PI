@@ -21,7 +21,7 @@ public abstract class AbstractDAOImpl<T> implements IAbstractDAO<T>
   @PersistenceContext
   private EntityManager entityManager;
 
-  public T findById(int id) {
+  public T findById(long id) {
     return entityManager.find(clazz, id);
   }
 

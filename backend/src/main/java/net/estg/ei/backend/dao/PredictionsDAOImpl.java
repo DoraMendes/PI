@@ -1,6 +1,7 @@
 package net.estg.ei.backend.dao;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.*;
 import net.estg.ei.backend.dto.FilterDTO;
 import net.estg.ei.backend.entity.PredictionEntity;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -79,13 +81,33 @@ public class PredictionsDAOImpl extends AbstractDAOImpl<PredictionEntity> implem
     Expression<Date> dateExpression = cb.function("date", Date.class, root.get("createdDate"));
     Predicate isAttack = cb.isTrue(root.get("isAttack"));
     Predicate dateInRange = cb.greaterThanOrEqualTo(root.get("createdDate"),
-            cb.literal(LocalDate.now().minusDays(30)));
+            cb.literal(Date.from(LocalDate.now().minusDays(30).atStartOfDay(ZoneId.systemDefault()).toInstant())));
 
     cq.multiselect(dateExpression, cb.count(root))
             .where(cb.and(isAttack, dateInRange))
             .groupBy(dateExpression);
 
     return entityManager.createQuery(cq).getResultList();
+  }
+
+  @Override
+  public Long getDailyAttackCounts() {
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+    Root<PredictionEntity> root = cq.from(PredictionEntity.class);
+
+    Expression<Date> dateExpression = cb.function("date", Date.class, root.get("createdDate"));
+    Predicate isAttack = cb.isTrue(root.get("isAttack"));
+    Predicate dateInRange = cb.equal(dateExpression, Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+    cq.select(cb.count(root))
+            .where(cb.and(isAttack, dateInRange))
+            .groupBy(dateExpression);
+    try {
+      return entityManager.createQuery(cq).getSingleResult();
+    }catch (NoResultException e) {
+      return 0L;
+    }
   }
 
   @Override
