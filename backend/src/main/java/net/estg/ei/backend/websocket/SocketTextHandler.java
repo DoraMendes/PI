@@ -1,9 +1,14 @@
 package net.estg.ei.backend.websocket;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.estg.ei.backend.dao.IPredictionDAO;
 import net.estg.ei.backend.entity.PredictionEntity;
+import net.estg.ei.backend.enums.AttackType;
 import net.estg.ei.backend.service.IPredictionService;
+import net.estg.ei.backend.utils.ProtocolUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -13,6 +18,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
@@ -31,6 +37,14 @@ public class SocketTextHandler extends TextWebSocketHandler {
     System.out.println("Added session to sessions list.");
   }
 
+//  Example data received from the python script
+//  {
+//    "prediction": [1.0, 0.0], // Example of a binary attack prediction
+//    "protocol": "TCP",
+//    "src_ip": 8080,
+//    "dst_ipd": 80
+//  }
+
   @Override
   protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
     String payload = message.getPayload();
@@ -39,7 +53,21 @@ public class SocketTextHandler extends TextWebSocketHandler {
       System.out.println("Received prediction: " + data.getPrediction());
 
       PredictionEntity entity = new PredictionEntity();
-      entity.setPrediction(data.getPrediction().toString());
+      boolean isAttack = data.getPrediction().get(0) == 1.0;
+      AttackType attackType = isAttack ? AttackType.DDOS : null;
+
+      // Set entity values using the parsed data
+      entity.setSourceIp(data.getSource_ip());
+      entity.setDestinationIp(data.getDestination_ip());
+
+      String protocolName =
+              Objects.equals(ProtocolUtils.getProtocolName(Integer.parseInt(data.getProtocol())), "Unknown")
+                      ? data.getProtocol() : ProtocolUtils.getProtocolName(Integer.parseInt(data.getProtocol()));
+      entity.setProtocol(protocolName);
+
+      entity.setAttack(isAttack);
+      entity.setAttackType(attackType);
+
       predictionService.save(entity);
 
       session.sendMessage(new TextMessage("Prediction saved: " + data.getPrediction()));
@@ -64,7 +92,13 @@ public class SocketTextHandler extends TextWebSocketHandler {
 
   @Getter
   @Setter
-  static class PredictionData {
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  public static class PredictionData {
     private List<Double> prediction;
+    private String source_ip;
+    private String destination_ip;
+    private String protocol;
   }
 }
