@@ -16,6 +16,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class PredictionDTO implements Serializable
 {
+  private Long id;
   private Date createdDate;
   private String sourceIp;
   private String destinationIp;

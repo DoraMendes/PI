@@ -12,7 +12,7 @@ public abstract class AbstractEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Integer id;
+  private Long id;
 
   @Column(name = "created_date", nullable = false, updatable = false)
   @Temporal(TemporalType.TIMESTAMP)
