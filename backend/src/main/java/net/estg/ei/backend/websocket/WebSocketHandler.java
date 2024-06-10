@@ -52,6 +52,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
       System.out.println("Received prediction: " + data.getPrediction());
 
       PredictionEntity entity = new PredictionEntity();
+
+      //TODO FIX isAttack and attackType
       boolean isAttack = data.getPrediction().get(0) == 1.0;
       AttackType attackType = isAttack ? AttackType.DDOS : null;
 
