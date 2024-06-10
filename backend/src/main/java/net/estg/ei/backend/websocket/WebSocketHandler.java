@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.estg.ei.backend.dao.IPredictionDAO;
 import net.estg.ei.backend.entity.PredictionEntity;
 import net.estg.ei.backend.enums.AttackType;
 import net.estg.ei.backend.service.IPredictionService;
@@ -22,7 +21,7 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
-public class SocketTextHandler extends TextWebSocketHandler {
+public class WebSocketHandler extends TextWebSocketHandler {
 
   private ObjectMapper mapper = new ObjectMapper();
   private static final CopyOnWriteArrayList<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
@@ -53,6 +52,8 @@ public class SocketTextHandler extends TextWebSocketHandler {
       System.out.println("Received prediction: " + data.getPrediction());
 
       PredictionEntity entity = new PredictionEntity();
+
+      //TODO FIX isAttack and attackType
       boolean isAttack = data.getPrediction().get(0) == 1.0;
       AttackType attackType = isAttack ? AttackType.DDOS : null;
 
