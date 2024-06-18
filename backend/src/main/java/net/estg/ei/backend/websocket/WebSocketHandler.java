@@ -40,8 +40,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 //  {
 //    "prediction": [1.0, 0.0], // Example of a binary attack prediction
 //    "protocol": "TCP",
-//    "src_ip": 8080,
-//    "dst_ipd": 80
+//    "src_ip": x.x.x.x,
+//    "dst_ipd": x.x.x.x
 //  }
 
   @Override
