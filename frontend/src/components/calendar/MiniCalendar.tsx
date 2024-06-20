@@ -29,6 +29,7 @@ export default function MiniCalendar(props: {
         value={value}
         selectRange={selectRange}
         view={'month'}
+        formatShortWeekday={(locale, date) => [ `S`, `M`, `T`, `W`, `T`, `F`, `S` ][date.getDay()]}
         tileContent={<Text color="brand.500" />}
         prevLabel={<Icon as={MdChevronLeft} w="24px" h="24px" mt="4px" />}
         nextLabel={<Icon as={MdChevronRight} w="24px" h="24px" mt="4px" />}

@@ -1,0 +1,30 @@
+
+
+
+get - tabela de historico:
+
+predictions todas - Prediction
+predictions filtered - Prediction
+
+
+
+
+statistics:
+
+dailyattackcounts - number -> card -> DONE
+
+attackslastmonth - data e number -> graficos de linhas
+attackvsnonattack - { attacks: number; nonAttacks: number } - pie chart
+
+
+attacktypepercentages - { tipo: 'a', count: 5; percentage: 8% } - pie chart so com tipo e percentagem; chart top 3 atatckas
+
+
+
+mapa - geoip -   
+*{
+   *   "country": "Country (Unknown if null)",
+   *   "city": "City (Unknown if null)",
+   *   "latitude": xx.yyyy,
+   *   "longitude": xx.yyyy
+   * }
