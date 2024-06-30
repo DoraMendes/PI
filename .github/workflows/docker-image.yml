@@ -1,0 +1,42 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag backend
+    - name: tar the image
+      run: docker save backend > backend.tar
+    - name: send tar to EC2 server
+      uses: easingthemes/ssh-deploy@main
+      with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SOURCE: "backend.tar"
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          TARGET: "/home/ubuntu/backend.tar"
+    - name: ssh into EC2
+      env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOSTNAME: ${{secrets.REMOTE_HOST}}
+          USER_NAME: ${{secrets.REMOTE_USER}}
+      run: |
+        echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+
+            # Now we have got the access of EC2 and we will start the deploy .
+            sudo docker load < backend.tar
+            sudo docker rm -v -f $(docker ps -qa)
+            sudo docker run -d --memory="400m" --memory-swap="3g" -p8080:8080 backend 
+            '
