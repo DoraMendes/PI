@@ -29,6 +29,9 @@ jobs:
           outputs: type=local,dest=.
           platforms: |
             linux/arm64
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
     - name: send tar to EC2 server
       uses: easingthemes/ssh-deploy@main
       with:
