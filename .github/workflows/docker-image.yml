@@ -37,6 +37,6 @@ jobs:
 
             # Now we have got the access of EC2 and we will start the deploy .
             sudo docker load < backend.tar
-            sudo docker rm -v -f $(docker ps -qa)
+            sudo docker rm -v -f $(sudo docker ps -qa)
             sudo docker run -d --memory="400m" --memory-swap="3g" -p8080:8080 backend 
             '
