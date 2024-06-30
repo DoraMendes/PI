@@ -26,6 +26,7 @@ jobs:
           context: ./backend
           push: false
           tags: backend
+          load: true
     - name: tar the image
       run: docker save backend > backend.tar
     - name: send tar to EC2 server
