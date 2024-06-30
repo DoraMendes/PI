@@ -7,11 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
     - name: Set up QEMU
@@ -24,6 +21,7 @@ jobs:
       run: docker buildx build --platform linux/arm64 --tag backend -o type=docker,dest=- ./backend > backend.tar
   
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
     - name: send tar to EC2 server
