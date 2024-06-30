@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build ./backend --file Dockerfile --tag backend
+      run: docker build . --file ./backend/Dockerfile --tag backend
     - name: tar the image
       run: docker save backend > backend.tar
     - name: send tar to EC2 server
