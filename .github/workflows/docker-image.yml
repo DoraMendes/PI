@@ -26,7 +26,7 @@ jobs:
           context: ./backend
           push: false
           tags: backend
-          outputs: type=local,dest=.
+          outputs: type=local,dest=./backend.tar
           platforms: |
             linux/arm64
   deploy:
