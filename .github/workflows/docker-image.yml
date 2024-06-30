@@ -26,9 +26,7 @@ jobs:
           context: ./backend
           push: false
           tags: backend
-          load: true
-    - name: tar the image
-      run: docker save backend > backend.tar
+          output: "type=local,dest=."
     - name: send tar to EC2 server
       uses: easingthemes/ssh-deploy@main
       with:
