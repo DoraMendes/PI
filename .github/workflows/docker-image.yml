@@ -26,7 +26,9 @@ jobs:
           context: ./backend
           push: false
           tags: backend
-          output: "type=local,dest=."
+          outputs: "type=local,dest=."
+          plataforms:
+            - linux/arm64
     - name: send tar to EC2 server
       uses: easingthemes/ssh-deploy@main
       with:
