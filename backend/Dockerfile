@@ -3,6 +3,16 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
+ARG BD_PASSWORD
+ENV BD_PASSWORD=$BD_PASSWORD
+
+ARG BD_USERNAME
+ENV BD_USERNAME=$BD_USERNAME
+
+ARG BD_URL
+ENV BD_URL=$BD_URL
+
+
 RUN mvn clean package -DskipTests
 FROM eclipse-temurin:22.0.1_8-jre-ubi9-minimal
 
