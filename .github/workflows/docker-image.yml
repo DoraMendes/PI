@@ -18,7 +18,7 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
     - name: Build the Docker image
-      run: docker buildx build --platform linux/arm64 --tag backend -o type=docker,dest=- ./backend > backend.tar
+      run: docker buildx build --platform linux/arm64 --tag backend  ---build-arg DB_URL=${DB_URL} --build-arg DB_USERNAME=${DB_USERNAME} --build-arg DB_PASSWORD=${DB_PASSWORD}  -o type=docker,dest=- ./backend > backend.tar
     - name: Upload tarball
       uses: actions/upload-artifact@v4
       with:
@@ -53,5 +53,5 @@ jobs:
             # Now we have got the access of EC2 and we will start the deploy .
             sudo docker load < backend.tar
             sudo docker rm -v -f $(sudo docker ps -qa)
-            sudo docker run -d --memory="400m" -e DB_URL=${DB_URL} -e DB_USERNAME=${DB_USERNAME} -e DB_PASSWORD=${DB_PASSWORD}  --memory-swap="3g" -p8080:8080 backend 
+            sudo docker run -d --memory="400m" --memory-swap="3g" -p8080:8080 backend 
             '
