@@ -18,6 +18,10 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
     - name: Build the Docker image
+      env:
+          DB_URL: ${{secrets.DB_URL}}
+          DB_USERNAME: ${{secrets.DB_USERNAME}}
+          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
       run: docker buildx build --platform linux/arm64 --tag backend  --build-arg DB_URL=${DB_URL} --build-arg DB_USERNAME=${DB_USERNAME} --build-arg DB_PASSWORD=${DB_PASSWORD}  -o type=docker,dest=- ./backend > backend.tar
     - name: Upload tarball
       uses: actions/upload-artifact@v4
