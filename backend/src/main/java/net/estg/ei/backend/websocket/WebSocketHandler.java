@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.estg.ei.backend.dto.PredictionDTO;
 import net.estg.ei.backend.entity.PredictionEntity;
 import net.estg.ei.backend.enums.AttackType;
 import net.estg.ei.backend.service.IPredictionService;
@@ -15,6 +16,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 import java.util.List;
 import java.util.Objects;
@@ -73,14 +75,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
       session.sendMessage(new TextMessage("Prediction saved: " + data.getPrediction()));
 
+      // Broadcast the payload back to all connected clients
+      for (WebSocketSession webSocketSession : sessions) {
+        if (webSocketSession.isOpen() && !webSocketSession.equals(session)) {
+          ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+          String json = ow.writeValueAsString(new PredictionDTO(entity));
+          webSocketSession.sendMessage(new TextMessage(json));
+        }
+      }
     } catch (Exception e) {
       System.out.println("Error processing message: " + e.getMessage());
-    }
-    // Broadcast the payload back to all connected clients
-    for (WebSocketSession webSocketSession : sessions) {
-      if (webSocketSession.isOpen()) {
-        webSocketSession.sendMessage(new TextMessage("Received: " + payload));
-      }
     }
   }
 
