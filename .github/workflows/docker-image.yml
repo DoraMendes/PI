@@ -51,8 +51,8 @@ jobs:
           DB_PASSWORD: ${{secrets.DB_PASSWORD}}
       run: |
         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} "
+        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
             sudo docker load < backend.tar
             sudo docker rm -v -f $(sudo docker ps -qa)
-            sudo docker run -d --memory="400m" --memory-swap="3g" -e DB_USERNAME=${DB_USERNAME} -e DB_PASSWORD=${DB_PASSWORD} -e DB_HOST=${DB_HOST} -p8080:8080 backend 
-            "
+            sudo docker run -d --memory="400m" --memory-swap="3g" -e DB_USERNAME=$DB_USERNAME -e DB_PASSWORD=$DB_PASSWORD -e DB_HOST=$DB_HOST -p8080:8080 backend 
+            '
