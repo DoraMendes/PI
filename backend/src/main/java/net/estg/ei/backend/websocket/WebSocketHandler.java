@@ -8,6 +8,7 @@ import net.estg.ei.backend.dto.PredictionDTO;
 import net.estg.ei.backend.entity.PredictionEntity;
 import net.estg.ei.backend.enums.AttackType;
 import net.estg.ei.backend.service.IPredictionService;
+import net.estg.ei.backend.utils.AttackTypeUtils;
 import net.estg.ei.backend.utils.ProtocolUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,13 +52,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
     String payload = message.getPayload();
     try {
       PredictionData data = mapper.readValue(payload, PredictionData.class);
-      System.out.println("Received prediction: " + data.getPrediction());
-
       PredictionEntity entity = new PredictionEntity();
-
-      //TODO FIX isAttack and attackType
+      
       boolean isAttack = data.getPrediction().get(0) < .2;
-      AttackType attackType = isAttack ? AttackType.DDOS : null;
+      AttackType attackType = isAttack ? AttackTypeUtils.getAttackType(data.getPrediction()) : null;
 
       // Set entity values using the parsed data
       entity.setSourceIp(data.getSource_ip());
