@@ -1,10 +1,10 @@
 package net.estg.ei.backend.dto;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.estg.ei.backend.entity.PredictionEntity;
 import net.estg.ei.backend.enums.AttackType;
 
 import java.io.Serializable;
@@ -23,4 +23,16 @@ public class PredictionDTO implements Serializable
   private String protocol;
   private boolean isAttack;
   private AttackType attackType;
+
+  public PredictionDTO(PredictionEntity prediction) {
+    this.isAttack = true;
+    this.id = prediction.getId();
+    this.createdDate = prediction.getCreatedDate();
+    this.sourceIp = prediction.getSourceIp();
+    this.destinationIp = prediction.getDestinationIp();
+    this.protocol = prediction.getProtocol();
+    this.attackType = prediction.getAttackType();
+  }
+
+  
 }
