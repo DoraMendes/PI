@@ -56,7 +56,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
       PredictionEntity entity = new PredictionEntity();
 
       //TODO FIX isAttack and attackType
-      boolean isAttack = data.getPrediction().get(0) == 1.0;
+      boolean isAttack = data.getPrediction().get(0) < .2;
       AttackType attackType = isAttack ? AttackType.DDOS : null;
 
       // Set entity values using the parsed data

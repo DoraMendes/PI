@@ -20,6 +20,6 @@ class SendPrediction:
     def __on_open(self, ws):
         print("Connection established.")
 
-    def send(self, result):
+    def send(self, prediction, source_ip, destination_ip, protocol):
         if self.ws.sock and self.ws.sock.connected:
-            self.ws.send(json.dumps({ "prediction": result }))
+            self.ws.send(json.dumps({ "prediction": prediction, "source_ip": source_ip, "destination_ip": destination_ip, "protocol": protocol }))

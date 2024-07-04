@@ -25,7 +25,7 @@ public class PredictionDTO implements Serializable
   private AttackType attackType;
 
   public PredictionDTO(PredictionEntity prediction) {
-    this.isAttack = true;
+    this.isAttack = prediction.isAttack();
     this.id = prediction.getId();
     this.createdDate = prediction.getCreatedDate();
     this.sourceIp = prediction.getSourceIp();

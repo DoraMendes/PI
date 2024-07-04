@@ -19,4 +19,4 @@ for x in iter(CollectTraffic()):
     y = pre_processing.preprocess(x)
     df = pd.DataFrame.from_dict(y)
     prediction = multiclass_model.predict(df, verbose=0) # verbose disabled to keep this script wasting performance (could be enabled to debug)
-    send_prediction.send(prediction.flatten().tolist())
+    send_prediction.send(prediction.flatten().tolist(), "123.123.123.123", "123.123.123.123", "1")
