@@ -1,8 +1,9 @@
+FROM maven:3.9-eclipse-temurin-21-alpine AS build
+
 ARG DB_HOST
 ARG DB_USERNAME
 ARG DB_PASSWORD
 
-FROM maven:3.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
