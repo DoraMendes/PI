@@ -14,10 +14,11 @@ public class AttackTypeUtils {
     );
 
     public static AttackType getAttackType(List<Double> predictions) {
+        int highestIndex = 0;
         for (int i = 1; i < predictions.size(); i++) {
-            if (predictions.get(i) == 1.0) return attackTypeDoubleListMapping.get(i); 
+            if (predictions.get(highestIndex) > predictions.get(i)) highestIndex = 1; 
         }
         
-        return AttackType.UNKNOWN;
+        return highestIndex == 0 ? AttackType.UNKNOWN : attackTypeDoubleListMapping.get(highestIndex);
     } 
 }
