@@ -61,6 +61,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
       entity.setSourceIp(data.getSource_ip());
       entity.setDestinationIp(data.getDestination_ip());
 
+      System.out.println(AttackTypeUtils.getAttackType(data.getPrediction()));
       String protocolName =
               Objects.equals(ProtocolUtils.getProtocolName(Integer.parseInt(data.getProtocol())), "Unknown")
                       ? data.getProtocol() : ProtocolUtils.getProtocolName(Integer.parseInt(data.getProtocol()));
