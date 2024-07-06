@@ -21,18 +21,16 @@
 
 */
 
-// Chakra imports
 import {
-  Avatar,
   Box,
   Flex,
+  FormLabel,
+  Image,
   Icon,
   Select,
   SimpleGrid,
   useColorModeValue,
 } from '@chakra-ui/react';
-// Assets
-import Usa from '/public/img/dashboards/usa.png';
 // Custom components
 // import MiniCalendar from 'components/calendar/MiniCalendar';
 import MiniStatistics from 'components/card/MiniStatistics';
@@ -43,23 +41,38 @@ import {
   MdBarChart,
   MdFileCopy,
 } from 'react-icons/md';
-import CheckTable from 'views/admin/rtl/components/CheckTable';
-import ComplexTable from 'views/admin/rtl/components/ComplexTable';
-import DailyTraffic from 'views/admin/rtl/components/DailyTraffic';
-import PieCard from 'views/admin/rtl/components/PieCard';
-import Tasks from 'views/admin/rtl/components/Tasks';
-import TotalSpent from 'views/admin/rtl/components/TotalSpent';
-import WeeklyRevenue from 'views/admin/rtl/components/WeeklyRevenue';
+import CheckTable from 'views/admin/default/components/CheckTable';
+import ComplexTable from 'views/admin/default/components/ComplexTable';
+import DailyTraffic from 'views/admin/default/components/DailyTraffic';
+import PieCard from 'views/admin/default/components/PieCard';
+import Tasks from 'views/admin/default/components/Tasks';
+import TotalSpent from 'views/admin/default/components/TotalSpent';
+import WeeklyRevenue from 'views/admin/default/components/WeeklyRevenue';
+import tableDataCheck from 'views/admin/default/variables/tableDataCheck';
+import tableDataComplex from 'views/admin/default/variables/tableDataComplex';
+// Assets
+import Usa from 'img/dashboards/usa.png';
+import { getAttacksVSNonAttacksCount } from 'statisticsRequests';
+import { useEffect, useState } from 'react';
+import MapChart from 'views/admin/default/components/MapChart';
 
-import tableDataCheck from 'views/admin/rtl/variables/tableDataCheck';
-import tableDataComplex from 'views/admin/rtl/variables/tableDataComplex';
-
-export default function UserReports() {
+export default function Default() {
   // Chakra Color Mode
+
   const brandColor = useColorModeValue('brand.500', 'white');
   const boxBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
+
+  const [attacksVSNonAttacksCount, setAttacksVSNonAttacksCount] = useState([]);
+
+  useEffect(() => {
+    getAttacksVSNonAttacksCount().then((a) => setAttacksVSNonAttacksCount(a))
+  }, [])
+  
+  console.log('attacksVSNonAttacksCount', attacksVSNonAttacksCount);
+  
+
   return (
-    <Box pt={{ base: '130px', md: '120px', xl: '120px' }}>
+    <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
       <SimpleGrid
         columns={{ base: 1, md: 2, lg: 3, '2xl': 6 }}
         gap="20px"
@@ -95,13 +108,13 @@ export default function UserReports() {
         />
         <MiniStatistics growth="+23%" name="Sales" value="$574.34" />
         <MiniStatistics
-          startContent={
-            <Box height={'56px'} width={'56px'}>
-              <Avatar src={Usa.src} height={'56px'} width={'56px'} />
-            </Box>
-          }
           endContent={
-            <Flex mt="10px">
+            <Flex me="-16px" mt="10px">
+              <FormLabel htmlFor="balance">
+                <Box boxSize={'12'}>
+                  <Image alt="" src={Usa.src} w={'100%'} h={'100%'} />
+                </Box>
+              </FormLabel>
               <Select
                 id="balance"
                 variant="mini"
@@ -154,7 +167,7 @@ export default function UserReports() {
         <CheckTable tableData={tableDataCheck} />
         <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
           <DailyTraffic />
-          <PieCard />
+          <PieCard chartData={attacksVSNonAttacksCount} title='attacks vs non attacks' />
         </SimpleGrid>
       </SimpleGrid>
       <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap="20px" mb="20px">

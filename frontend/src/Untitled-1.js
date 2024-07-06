@@ -3,11 +3,11 @@ import { Box, Flex, Text, Select, useColorModeValue } from '@chakra-ui/react';
 // Custom components
 import Card from 'components/card/Card';
 import PieChart from 'components/charts/PieChart';
-import { pieChartData, pieChartOptions } from 'variables/charts';
+import { pieChartOptions } from 'variables/charts';
 import { VSeparator } from 'components/separator/Separator';
 
 export default function Conversion(props: { [x: string]: any }) {
-	const { ...rest } = props;
+	const { chartData, title, ...rest } = props;
 
 	// Chakra Color Mode
 	const textColor = useColorModeValue('secondaryGray.900', 'white');
@@ -22,7 +22,7 @@ export default function Conversion(props: { [x: string]: any }) {
 				w='100%'
 				mb='8px'>
 				<Text color={textColor} fontSize='md' fontWeight='600' mt='4px'>
-					Your Pie Chart
+					{title}
 				</Text>
 				<Select fontSize='sm' variant='subtle' defaultValue='monthly' width='unset' fontWeight='700'>
 					<option value='daily'>Daily</option>
@@ -31,7 +31,7 @@ export default function Conversion(props: { [x: string]: any }) {
 				</Select>
 			</Flex>
 
-			<PieChart h='100%' w='100%' chartData={pieChartData} chartOptions={pieChartOptions} />
+			<PieChart h='100%' w='100%' chartData={chartData} chartOptions={pieChartOptions} />
 			<Card
 				bg={cardColor}
 				flexDirection='row'

@@ -52,12 +52,120 @@ import tableDataCheck from 'views/admin/default/variables/tableDataCheck';
 import tableDataComplex from 'views/admin/default/variables/tableDataComplex';
 // Assets
 import Usa from 'img/dashboards/usa.png';
+import { getAttacksVSNonAttacksCount, getDailyAttacksCount, getAttackTypePercentages } from 'statisticsRequests';
+import { useEffect, useState } from 'react';
+import AttacksLastMonth from 'views/admin/default/components/AttacksLastMonth';
+import { AttackTypePercentages, AttackVSNonAttack } from 'types/statistics';
+import MapChart from 'views/admin/default/components/MapChart';
 
 export default function Default() {
   // Chakra Color Mode
 
   const brandColor = useColorModeValue('brand.500', 'white');
   const boxBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
+
+  const [attacksVSNonAttacksCount, setAttacksVSNonAttacksCount] = useState<AttackVSNonAttack | null>(null);
+  const [dailyAttacks, setDailyAttacks] = useState(0);
+  const [attacktypepercentages, setAttacktypepercentages] = useState<AttackTypePercentages[]>([]);
+
+  useEffect(() => {
+    getAttacksVSNonAttacksCount().then((a) => setAttacksVSNonAttacksCount(a));
+    getDailyAttacksCount().then((a) => setDailyAttacks(a));
+    getAttackTypePercentages().then((a) => setAttacktypepercentages(a));
+  }, [])
+  
+  console.log('attacksVSNonAttacksCount', attacksVSNonAttacksCount);
+  console.log('dailyAttacks', dailyAttacks);
+  console.log('attacktypepercentages', attacktypepercentages);
+
+  const attacksVSNonAttacksCountChartData = [attacksVSNonAttacksCount ? attacksVSNonAttacksCount.attacks : 0, attacksVSNonAttacksCount ? attacksVSNonAttacksCount.nonAttacks : 0];
+  
+  const attacktypepercentagesChartData = () => {
+		const aux = [];
+
+		attacktypepercentages.forEach((a) => {
+			aux.push(a.count);
+		})
+		return aux;
+	}
+
+  const attacksVSNonAttacksCountChartOptions = {
+    labels: ["Attacks", "Non Attacks"],
+    colors: ["#4318FF", "#6AD2FF"],
+    chart: {
+      width: "50px",
+    },
+    states: {
+      hover: {
+        filter: {
+          type: "none",
+        },
+      },
+    },
+    legend: {
+      show: false,
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    hover: { mode: null },
+    plotOptions: {
+      donut: {
+        expandOnClick: false,
+        donut: {
+          labels: {
+            show: false,
+          },
+        },
+      },
+    },
+    fill: {
+      colors: ["#4318FF", "#6AD2FF", "#EFF4FB"],
+    },
+    tooltip: {
+      enabled: true,
+      theme: "dark",
+    },
+  };
+
+  const attacktypepercentagesChartOptions = {
+    labels: attacktypepercentages.map((a) => a.type),
+    colors: ["#4318FF", "#6AD2FF"],
+    chart: {
+      width: "50px",
+    },
+    states: {
+      hover: {
+        filter: {
+          type: "none",
+        },
+      },
+    },
+    legend: {
+      show: false,
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    hover: { mode: null },
+    plotOptions: {
+      donut: {
+        expandOnClick: false,
+        donut: {
+          labels: {
+            show: false,
+          },
+        },
+      },
+    },
+    fill: {
+      colors: ["#4318FF", "#6AD2FF", "#EFF4FB", "#b2df8a", "#fb9a99", "#fdbf6f", "#cab2d6", "#6a3d9a", "#99ffcc", "#cc99ff", "#ffffcc", "#99ffcc"],
+    },
+    tooltip: {
+      enabled: true,
+      theme: "dark",
+    },
+  };
 
   return (
     <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
@@ -66,6 +174,7 @@ export default function Default() {
         gap="20px"
         mb="20px"
       >
+        {/* dailyattackcounts - number -> card */}
         <MiniStatistics
           startContent={
             <IconBox
@@ -77,93 +186,27 @@ export default function Default() {
               }
             />
           }
-          name="Earnings"
-          value="$350.4"
-        />
-        <MiniStatistics
-          startContent={
-            <IconBox
-              w="56px"
-              h="56px"
-              bg={boxBg}
-              icon={
-                <Icon w="32px" h="32px" as={MdAttachMoney} color={brandColor} />
-              }
-            />
-          }
-          name="Spend this month"
-          value="$642.39"
-        />
-        <MiniStatistics growth="+23%" name="Sales" value="$574.34" />
-        <MiniStatistics
-          endContent={
-            <Flex me="-16px" mt="10px">
-              <FormLabel htmlFor="balance">
-                <Box boxSize={'12'}>
-                  <Image alt="" src={Usa.src} w={'100%'} h={'100%'} />
-                </Box>
-              </FormLabel>
-              <Select
-                id="balance"
-                variant="mini"
-                mt="5px"
-                me="0px"
-                defaultValue="usd"
-              >
-                <option value="usd">USD</option>
-                <option value="eur">EUR</option>
-                <option value="gba">GBA</option>
-              </Select>
-            </Flex>
-          }
-          name="Your balance"
-          value="$1,000"
-        />
-        <MiniStatistics
-          startContent={
-            <IconBox
-              w="56px"
-              h="56px"
-              bg="linear-gradient(90deg, #4481EB 0%, #04BEFE 100%)"
-              icon={<Icon w="28px" h="28px" as={MdAddTask} color="white" />}
-            />
-          }
-          name="New Tasks"
-          value="154"
-        />
-        <MiniStatistics
-          startContent={
-            <IconBox
-              w="56px"
-              h="56px"
-              bg={boxBg}
-              icon={
-                <Icon w="32px" h="32px" as={MdFileCopy} color={brandColor} />
-              }
-            />
-          }
-          name="Total Projects"
-          value="2935"
+          name="Attacks today"
+          value={dailyAttacks}
         />
       </SimpleGrid>
 
       <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px" mb="20px">
-        <TotalSpent />
-        <WeeklyRevenue />
+        <AttacksLastMonth />
       </SimpleGrid>
+
+      <p>olssss</p>
+      <MapChart />
+      
       <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap="20px" mb="20px">
-        <CheckTable tableData={tableDataCheck} />
         <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
-          <DailyTraffic />
-          <PieCard />
+          <PieCard pieChartData={attacksVSNonAttacksCountChartData} pieChartOptions={attacksVSNonAttacksCountChartOptions} title='Attacks VS Non Attacks' />
         </SimpleGrid>
-      </SimpleGrid>
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap="20px" mb="20px">
-        <ComplexTable tableData={tableDataComplex} />
+
         <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
-          <Tasks />
-          {/* <MiniCalendar h="100%" minW="100%" selectRange={false} /> */}
+          <PieCard pieChartData={attacktypepercentagesChartData()} pieChartOptions={attacktypepercentagesChartOptions} title='Attacks by Type' />
         </SimpleGrid>
+
       </SimpleGrid>
     </Box>
   );
