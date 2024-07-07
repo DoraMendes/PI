@@ -34,9 +34,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
   private static final int attackThreshold = 5;
   private int consecutiveAttackCount = 0;
 
-  @Value("${application.keepalive.broadcast:10000}") // Interval for keep-alive messages in milliseconds
-  private long keepAliveBroadcast;
-
   @Autowired
   private IPredictionService predictionService;
 
@@ -117,7 +114,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
   }
 
-  @Scheduled(fixedRateString = "${application.keepalive.broadcast}")
+  @Scheduled(fixedRateString = "${application.keepalive.broadcast:10000}")
   public void sendKeepAliveMessage() {
     for (WebSocketSession session : sessions) {
       if (session.isOpen()) {

@@ -15,12 +15,8 @@ public interface IPredictionService extends IAbstractService<PredictionEntity>
 {
   List<PredictionEntity> getFilteredPredictions(@ModelAttribute FilterDTO filters);
   List<Object[]> getAttacksByDayLast30Days();
-
   Long getDailyAttackCounts();
-
   List<Object[]> countAttacksVsNonAttacks();
-
   Map<AttackType, Pair<Long, Double>> calculateAttackTypePercentages();
-
   GeoLocationDTO getGeolocationIp(Long id) throws IOException;
 }

@@ -5,21 +5,23 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import net.estg.ei.backend.entity.AbstractEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public abstract class AbstractDAOImpl<T> implements IAbstractDAO<T>
+public abstract class AbstractDAOImpl<T extends AbstractEntity> implements IAbstractDAO<T>
 {
+
+  @PersistenceContext
+  private EntityManager entityManager;
+
   private final Class<T> clazz;
 
   protected AbstractDAOImpl(Class<T> clazz) {
     this.clazz = clazz;
   }
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   public T findById(long id) {
     return entityManager.find(clazz, id);

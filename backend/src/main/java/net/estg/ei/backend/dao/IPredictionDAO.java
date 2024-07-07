@@ -8,14 +8,11 @@ import org.antlr.v4.runtime.misc.Pair;
 import java.util.List;
 import java.util.Map;
 
-public interface IPredictionDAO
+public interface IPredictionDAO extends IAbstractDAO<PredictionEntity>
 {
   List<PredictionEntity> findAllWithFilters(FilterDTO filters);
   List<Object[]> countAttacksByDayLast30Days();
-
   Long getDailyAttackCounts();
-
   List<Object[]> countAttacksVsNonAttacks();
-
   Map<AttackType, Pair<Long, Double>> calculateAttackTypePercentages();
 }
