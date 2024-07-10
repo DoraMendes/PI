@@ -70,10 +70,4 @@ class PreProcess:
         self.__incrementAverageParcels("http.time", preProcessedObj['http.time'][0])
         self.__incrementAverageParcels("tcp.analysis.initial_rtt", preProcessedObj['tcp.analysis.initial_rtt'][0])
 
-        return {
-            "model_data": preProcessedObj,
-            "extra": {
-                "ip_src": self.__getFieldValue(obj, 'ip.src', "N/A"),
-                "ip_dst": self.__getFieldValue(obj, 'ip.dst', "N/A"),
-            }
-        }
+        return preProcessedObj
