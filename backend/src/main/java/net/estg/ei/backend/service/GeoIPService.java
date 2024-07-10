@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-public class GeoIPService
+public class GeoIPService implements IGeoIPService
 {
 
   private static final String API_KEY = "908b5eecf334434b9ec240524e22ed6b";

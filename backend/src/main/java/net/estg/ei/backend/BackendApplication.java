@@ -18,15 +18,15 @@ public class BackendApplication {
 	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
 		return args -> {
-
-			System.out.println("Let's inspect the beans provided by Spring Boot:");
-
-			String[] beanNames = ctx.getBeanDefinitionNames();
-			Arrays.sort(beanNames);
-			for (String beanName : beanNames) {
-				System.out.println(beanName);
-			}
-
+			System.out.println("Application started");
+			System.out.println("  _____           _      _          _____        __                       __  _   _           \n"
+							+ " |  __ \\         (_)    | |        |_   _|      / _|                     /_/ | | (_)          \n"
+							+ " | |__) | __ ___  _  ___| |_ ___     | |  _ __ | |_ ___  _ __ _ __ ___   __ _| |_ _  ___ ___  \n"
+							+ " |  ___/ '__/ _ \\| |/ _ \\ __/ _ \\    | | | '_ \\|  _/ _ \\| '__| '_ ` _ \\ / _` | __| |/ __/ _ \\ \n"
+							+ " | |   | | | (_) | |  __/ || (_) |  _| |_| | | | || (_) | |  | | | | | | (_| | |_| | (_| (_) |\n"
+							+ " |_|   |_|  \\___/| |\\___|\\__\\___/  |_____|_| |_|_| \\___/|_|  |_| |_| |_|\\__,_|\\__|_|\\___\\___/ \n"
+							+ "                _/ |                                                                          \n"
+							+ "               |__/                                                                           ");
 		};
 	}
 }

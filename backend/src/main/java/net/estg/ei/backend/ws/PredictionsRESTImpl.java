@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/predictions")
+@RequestMapping(value = "/api/predictions", produces = "application/json")
 public class PredictionsRESTImpl extends AbstractRESTImpl<PredictionEntity, PredictionDTO>{
 
   @Autowired

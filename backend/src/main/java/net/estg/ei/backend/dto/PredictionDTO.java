@@ -23,16 +23,4 @@ public class PredictionDTO implements Serializable
   private String protocol;
   private boolean isAttack;
   private AttackType attackType;
-
-  public PredictionDTO(PredictionEntity prediction) {
-    this.isAttack = prediction.isAttack();
-    this.id = prediction.getId();
-    this.createdDate = prediction.getCreatedDate();
-    this.sourceIp = prediction.getSourceIp();
-    this.destinationIp = prediction.getDestinationIp();
-    this.protocol = prediction.getProtocol();
-    this.attackType = prediction.getAttackType();
-  }
-
-  
 }

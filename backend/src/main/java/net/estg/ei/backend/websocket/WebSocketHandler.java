@@ -1,16 +1,16 @@
 package net.estg.ei.backend.websocket;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import net.estg.ei.backend.dto.PredictionDTO;
+import lombok.*;
+import net.estg.ei.backend.adapters.PredictionAdapter;
 import net.estg.ei.backend.entity.PredictionEntity;
 import net.estg.ei.backend.enums.AttackType;
 import net.estg.ei.backend.service.IPredictionService;
 import net.estg.ei.backend.utils.AttackTypeUtils;
 import net.estg.ei.backend.utils.ProtocolUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -24,10 +24,15 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
+@EnableScheduling
 public class WebSocketHandler extends TextWebSocketHandler {
 
-  private ObjectMapper mapper = new ObjectMapper();
+  private final ObjectMapper mapper = new ObjectMapper();
   private static final CopyOnWriteArrayList<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+
+  @Value("${application.attack.threshold:5}") // Attack Threshold for broadcasting, if not defined in property file default = 5
+  private static final int attackThreshold = 5;
+  private int consecutiveAttackCount = 0;
 
   @Autowired
   private IPredictionService predictionService;
@@ -43,17 +48,17 @@ public class WebSocketHandler extends TextWebSocketHandler {
 //  {
 //    "prediction": [1.0, 0.0], // Example of a binary attack prediction
 //    "protocol": "TCP",
-//    "src_ip": 8080,
-//    "dst_ipd": 80
+//    "src_ip": x.x.x.x,
+//    "dst_ipd": x.x.x.x
 //  }
 
   @Override
-  protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+  protected void handleTextMessage(WebSocketSession session, TextMessage message) {
     String payload = message.getPayload();
     try {
       PredictionData data = mapper.readValue(payload, PredictionData.class);
       PredictionEntity entity = new PredictionEntity();
-      
+
       boolean isAttack = data.getPrediction().get(0) < .2;
       AttackType attackType = isAttack ? AttackTypeUtils.getAttackType(data.getPrediction()) : null;
 
@@ -74,14 +79,18 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
       session.sendMessage(new TextMessage("Prediction saved: " + data.getPrediction()));
 
-      // Broadcast the payload back to all connected clients
-      for (WebSocketSession webSocketSession : sessions) {
-        if (webSocketSession.isOpen() && !webSocketSession.equals(session)) {
-          ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-          String json = ow.writeValueAsString(new PredictionDTO(entity));
-          webSocketSession.sendMessage(new TextMessage(json));
+      if (isAttack) { //Only broadcast attacks after a certain number have been detected in succession
+        consecutiveAttackCount++;
+        if (consecutiveAttackCount >= attackThreshold) {
+          // Broadcast the payload back to all connected clients
+          broadcastPrediction(entity, session);
+          consecutiveAttackCount = 0; // Reset the counter after broadcasting
         }
+      } else {
+        consecutiveAttackCount = 0; // Reset the counter if an attack is not detected
+        broadcastPrediction(entity, session); //Broadcast non-malicious attack anyway
       }
+
     } catch (Exception e) {
       System.out.println("Error processing message: " + e.getMessage());
     }
@@ -92,6 +101,30 @@ public class WebSocketHandler extends TextWebSocketHandler {
   {
     sessions.remove(session);
     System.out.println("Removed session from sessions list.");
+  }
+
+  private void broadcastPrediction(PredictionEntity entity, WebSocketSession currentSession) throws Exception {
+    for (WebSocketSession webSocketSession : sessions) {
+      if (webSocketSession.isOpen() && !webSocketSession.equals(currentSession)) {
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        PredictionAdapter predictionAdapter = new PredictionAdapter();
+        String json = ow.writeValueAsString(predictionAdapter.entityToDTO(entity));
+        webSocketSession.sendMessage(new TextMessage(json));
+      }
+    }
+  }
+
+  @Scheduled(fixedRateString = "${application.keepalive.broadcast:10000}")
+  public void sendKeepAliveMessage() {
+    for (WebSocketSession session : sessions) {
+      if (session.isOpen()) {
+        try {
+          session.sendMessage(new TextMessage("Session is okay"));
+        } catch (Exception e) {
+          System.out.println("Error sending keep-alive message: " + e.getMessage());
+        }
+      }
+    }
   }
 
   @Getter
