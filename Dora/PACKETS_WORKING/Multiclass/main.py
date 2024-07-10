@@ -15,8 +15,8 @@ multiclass_model = tf.keras.models.load_model('model_multiclass.h5', compile=Fal
 pre_processing = PreProcess()
 send_prediction = SendPrediction(args.server_url)
 
-for x in iter(CollectTraffic()):
-    y = pre_processing.preprocess(x)
+for model_data, extra in iter(CollectTraffic()):
+    y = pre_processing.preprocess(model_data)
     df = pd.DataFrame.from_dict(y)
     prediction = multiclass_model.predict(df, verbose=0) # verbose disabled to keep this script wasting performance (could be enabled to debug)
-    send_prediction.send(prediction.flatten().tolist(), "123.123.123.123", "123.123.123.123", "1")
+    send_prediction.send(prediction.flatten().tolist(), extra.ip_src, extra.ip_dst, "1")

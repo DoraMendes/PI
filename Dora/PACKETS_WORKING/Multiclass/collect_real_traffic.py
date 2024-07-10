@@ -45,5 +45,7 @@ class CollectTraffic:
             "eth.src_not_group": get_value_by_path(packet['layers'], 'eth.eth_eth_src_not_group', None),
 
             "arp.isannouncement": get_value_by_path(packet['layers'], 'arp.arp_arp_isannouncement', None),
+            "ip.src": get_value_by_path(packet['layers'], 'ip.ip_ip_src', get_value_by_path(packet['layers'], 'ipv6.ipv6_ipv6_src', None)),
+            "ip.dst": get_value_by_path(packet['layers'], 'ip.ip_ip_dst', get_value_by_path(packet['layers'], 'ipv6.ipv6_ipv6_dst', None)),
         }
         return obj

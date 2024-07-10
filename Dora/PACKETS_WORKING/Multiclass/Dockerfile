@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     yacc bison byacc libpcap-dev libssh-dev \
     libsystemd-dev libc-ares-dev libspeexdsp-dev
 
-RUN wget https://2.na.dl.wireshark.org/src/wireshark-latest.tar.xz -O /tmp/wireshark-latest.tar.xz \
-    && tar -xvf /tmp/wireshark-latest.tar.xz -C /tmp \
+RUN wget https://2.na.dl.wireshark.org/src/all-versions/wireshark-4.2.5.tar.xz -O /tmp/wireshark-4.2.5.tar.xz \
+    && tar -xvf /tmp/wireshark-4.2.5.tar.xz -C /tmp \
     && cd /tmp/wireshark-4.2.5 \
     && cmake -S . -B build -DBUILD_wireshark=OFF -DBUILD_dftest=OFF -DCMAKE_INSTALL_PREFIX=/tmp/wireshark-latest/install \
     && cmake --build build --target install -- -j$(nproc)
