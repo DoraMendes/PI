@@ -6,7 +6,7 @@ export const dailyAttackCountsMock = (): number => {
     return 50;
 }
 
-export const attackLastMonthMock = (override?: any): any => {
+export const attackLastMonthMock = (): any => {
     return {
         date: randomDate(new Date(2024, 4, 1), new Date(2024, 4, 31)),
         count: Math.floor(Math.random()*1000)

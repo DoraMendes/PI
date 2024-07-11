@@ -37,7 +37,7 @@ const routes: IRoute[] = [
   {
     name: 'History',
     layout: '/admin',
-    path: '/history',
+    path: '/data-tables',
     icon: <Icon as={MdHistory} width="20px" height="20px" color="inherit" />,
   },
 

@@ -1,6 +1,6 @@
 import { AttackTypes, Prediction, } from "types/predictions";
 
-export const prediction = (): Prediction => {
+export const prediction = (newP?: Partial<Prediction>): Prediction => {
     return {
         id: 1,
         createdDate: 'a',
@@ -9,6 +9,7 @@ export const prediction = (): Prediction => {
         protocol: 'a',
         attackType: "APACHE_KILLER",
         attack: true,
+        ...newP,
     }
 }
 

@@ -45,7 +45,7 @@ export default function PieCard(props: { [x: string]: any }) {
 				>
 					{pieChartOptions.labels.map((label: any, index: number) => {
 						return (
-							<Flex direction='column' py='5px' key="" >
+							<Flex direction='column' py='5px' key={label} >
 								<Flex align='center'>
 									<Box h='8px' w='8px' bg='brand.500' borderRadius='50%' me='4px' background={colorsLegend[index]} />
 									<Text fontSize='xs' color='secondaryGray.600' fontWeight='700' mb='5px' whiteSpace='nowrap'>
