@@ -1,18 +1,19 @@
-import { AttackTypePercentages, AttackVSNonAttack, AttacksLastMonth, GeoIpLocation } from "types/statistics";
-import { randomDate } from "utils/utils";
+import { AttackTypes } from "types/predictions";
+import { AttackTypePercentages, AttackVSNonAttack, GeoIpLocation } from "types/statistics";
+import { generateRandomPoints, randomDate } from "utils/utils";
 
 export const dailyAttackCountsMock = (): number => {
     return 50;
 }
 
-export const attackLastMonthMock = (override?: any): AttacksLastMonth => {
+export const attackLastMonthMock = (override?: any): any => {
     return {
         date: randomDate(new Date(2024, 4, 1), new Date(2024, 4, 31)),
         count: Math.floor(Math.random()*1000)
     }
 };
 
-export const attacksLastMonthMock : AttacksLastMonth[] = [attackLastMonthMock(), attackLastMonthMock(), attackLastMonthMock(), attackLastMonthMock(), attackLastMonthMock()];
+export const attacksLastMonthMock : any[] = [attackLastMonthMock(), attackLastMonthMock(), attackLastMonthMock(), attackLastMonthMock(), attackLastMonthMock()];
 
 export const attackVSNonAttackMock = (): AttackVSNonAttack => {
     return {
@@ -21,21 +22,20 @@ export const attackVSNonAttackMock = (): AttackVSNonAttack => {
     }
 }
 
-export const geoIpLocationMock = (): GeoIpLocation => {
+export const geoIpLocationMock = (coord: {lat: number, lng: number}): GeoIpLocation => {
     return {
         country: "Country (Unknown if null)",
-        city: "City (Unknown if null)",
-        latitude: '11',
-        longitude: '22',
+        city: `city-${Math.random()}`,
+        latitude: coord.lat.toString(),
+        longitude: coord.lng.toString(),
     }
 }
 
-export const attackTypePercentagesMock = (i: number): AttackTypePercentages => {
-    return {
-        type: i+1,
-        count: Math.floor(Math.random()*1000),
-        percentage: Math.floor(Math.random()*1000),
-    }
+export const geoIpLocationsMock: GeoIpLocation[] = Array.from({length: 100}).map((a, idx) => geoIpLocationMock(generateRandomPoints({'lat':24.23, 'lng':23.12}, 1000, 100)[idx]))
+
+
+export const attackTypePercentagesMock = (i: number): any => {
+    return AttackTypes.reduce((acc, a) => ({...acc, [a]: 0}), {})
 }
 
-export const attacksTypePercentagesMock: AttackTypePercentages[] = Array.from({length: 12}).map((a, idx) => attackTypePercentagesMock(idx))
+export const attacksTypePercentagesMock: AttackTypePercentages[] = Array.from({length: 8}).map((a, idx) => attackTypePercentagesMock(idx))

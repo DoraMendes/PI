@@ -3,6 +3,7 @@
 import {
   Box,
   Button,
+  Card,
   Center,
   Flex,
   Icon,
@@ -50,6 +51,33 @@ export default function HeaderLinks(props: {
   const borderButton = useColorModeValue('secondaryGray.500', 'whiteAlpha.200');
 
   return (
+<>
+      {/* <Flex
+        w={{ sm: '100%', md: 'auto' }}
+        alignItems="center"
+        flexDirection="row"
+        bg={menuBg}
+        flexWrap={secondary ? { base: 'wrap', md: 'nowrap' } : 'unset'}
+        p="10px"
+        borderRadius="30px"
+        boxShadow={shadow}
+      >
+        <Flex w="100%" mb="0px">
+            <Text
+              ps="20px"
+              pt="16px"
+              pb="10px"
+              w="100%"
+              borderBottom="1px solid"
+              borderColor={borderColor}
+              fontSize="sm"
+              fontWeight="700"
+              color={textColor}
+            >
+              👋&nbsp; Hey, Adela
+            </Text>
+          </Flex>
+      </Flex> */}
     <Flex
       w={{ sm: '100%', md: 'auto' }}
       alignItems="center"
@@ -60,16 +88,16 @@ export default function HeaderLinks(props: {
       borderRadius="30px"
       boxShadow={shadow}
     >
-      <SearchBar
+      {/* <SearchBar
         mb={() => {
           if (secondary) {
             return { base: '10px', md: 'unset' };
           }
           return 'unset';
-        }}
+        }}  
         me="10px"
         borderRadius="30px"
-      />
+      /> */}
       <Flex
         bg={ethBg}
         display={secondary ? 'flex' : 'none'}
@@ -105,7 +133,9 @@ export default function HeaderLinks(props: {
         </Text>
       </Flex>
       <SidebarResponsive routes={routes} />
-      <Menu>
+
+      {/* notificacoes */}
+      {/* <Menu>
         <MenuButton p="0px">
           <Icon
             mt="6px"
@@ -162,9 +192,10 @@ export default function HeaderLinks(props: {
             </MenuItem>
           </Flex>
         </MenuList>
-      </Menu>
+      </Menu> */}
 
-      <Menu>
+      {/* info */}
+      {/* <Menu>
         <MenuButton p="0px">
           <Icon
             mt="6px"
@@ -224,7 +255,7 @@ export default function HeaderLinks(props: {
             </Link>
           </Flex>
         </MenuList>
-      </Menu>
+      </Menu> */}
 
       <Button
         variant="no-hover"
@@ -313,5 +344,7 @@ export default function HeaderLinks(props: {
         </MenuList>
       </Menu>
     </Flex>
+</>
+
   );
 }

@@ -16,7 +16,7 @@ export const findCurrentRoute = (routes: IRoute[]): IRoute => {
 
 export const getActiveRoute = (routes: IRoute[]): string => {
   const route = findCurrentRoute(routes);
-  return route?.name || "Default Brand Text";
+  return route?.name || "Default SidebarLogoName Text";
 };
 
 export const getActiveNavbar = (routes: IRoute[]): boolean => {

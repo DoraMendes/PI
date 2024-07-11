@@ -15,6 +15,7 @@ export default function FixedPlugin (props: { [x: string]: any }) {
   useEffect(() => {
     if (isWindowAvailable() || window.document.documentElement.dir !== 'rtl')
       return
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     ;[left, right] = [right, left]
   })
 

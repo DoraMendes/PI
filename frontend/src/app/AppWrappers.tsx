@@ -20,7 +20,7 @@ export default function AppWrappers({ children }: { children: ReactNode }) {
   React.useEffect(() => {
     if (!auth.isSignedIn) clerk.redirectToSignIn();
     else if (path.includes("/sign-in")) router.push('/admin/default');
-  }, [auth.isSignedIn]);
+  }, [auth.isSignedIn, clerk, path, router]);
 
   return (
     <CacheProvider>
