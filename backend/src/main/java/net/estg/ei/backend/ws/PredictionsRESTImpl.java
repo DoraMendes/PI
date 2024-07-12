@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://pi-zeta-two.vercel.app/"})
 @RequestMapping(value = "/api/predictions", produces = "application/json")
 public class PredictionsRESTImpl extends AbstractRESTImpl<PredictionEntity, PredictionDTO>{
 
