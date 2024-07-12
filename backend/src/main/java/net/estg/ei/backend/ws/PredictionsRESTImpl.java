@@ -2,6 +2,7 @@ package net.estg.ei.backend.ws;
 
 import net.estg.ei.backend.adapters.AbstractAdapter;
 import net.estg.ei.backend.adapters.PredictionAdapter;
+import net.estg.ei.backend.dto.AttacksVsNonAttacksDTO;
 import net.estg.ei.backend.dto.FilterDTO;
 import net.estg.ei.backend.dto.GeoLocationDTO;
 import net.estg.ei.backend.dto.PredictionDTO;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "/api/predictions", produces = "application/json")
 public class PredictionsRESTImpl extends AbstractRESTImpl<PredictionEntity, PredictionDTO>{
 
@@ -87,7 +89,7 @@ public class PredictionsRESTImpl extends AbstractRESTImpl<PredictionEntity, Pred
    *]
    */
   @GetMapping("/attackvsnonattack")
-  public List<Object[]> countAttacksVsNonAttacks() {
+  public AttacksVsNonAttacksDTO countAttacksVsNonAttacks() {
     return predictionService.countAttacksVsNonAttacks();
   }
   /*
