@@ -4,7 +4,7 @@ import IPinfoWrapper, { IPinfo, AsnResponse } from "node-ipinfo";
 import Redis from "ioredis"
 
 const ipinfoWrapper = new IPinfoWrapper(process.env.IP_INFO_TOKEN);
-const client = new Redis(`rediss://default:${process.env.UPSTASH_PASSWORD}@first-fox-56849.upstash.io:6379`);
+const client = new Redis(`rediss://default:${process.env.UPSTASH_PASSWORD}@${process.env.UPSTASH_DOMAIN}:6379`);
 // cache it somewhere
 
 export async function getLocationIpInfo(ip: string | null): Promise<IPinfo | null> {
