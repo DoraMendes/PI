@@ -1,21 +1,16 @@
-// Chakra imports
+'use client';
+
 import { Box, Button, Flex, Icon, Text, useColorModeValue, } from '@chakra-ui/react';
-// Custom components
 import Card from 'components/card/Card';
 import LineChart from 'components/charts/LineChart';
 import { DateTime, } from 'luxon';
-import { useEffect, useRef, useState, } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MdBarChart, MdOutlineCalendarToday, } from 'react-icons/md';
-import { WebsocketClient, } from 'socket';
-// Assets
 import { Prediction, } from 'types/predictions';
-import { interval, } from 'utils/timer';
 import { getTranslation } from 'utils/utils';
 
-const abort = new AbortController();
-
-export default function AttacksLast5Minutes(props: { [x: string]: any }) {
-	const { ...rest } = props;
+export default function AttacksForever(props: { [x: string]: any } & { predictions: Prediction[] }) {
+	const { predictions, ...rest } = props;
 
 	const textColor = useColorModeValue('secondaryGray.900', 'white');
 	const textColorSecondary = useColorModeValue('secondaryGray.600', 'white');
@@ -24,19 +19,21 @@ export default function AttacksLast5Minutes(props: { [x: string]: any }) {
 	const bgButton = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
 	const bgHover = useColorModeValue({ bg: 'secondaryGray.400', }, { bg: 'whiteAlpha.50', });
 	const bgFocus = useColorModeValue({ bg: 'secondaryGray.300', }, { bg: 'whiteAlpha.100', });
-	const [attacks, setAttacks,] = useState<{ [P in Prediction['attackType']]: number[] }>({
-		APACHE_KILLER: new Array(30 * 5).fill(0), ARP_SPOOFING: new Array(30 * 5).fill(0), CAM_OVERFLOW: new Array(30 * 5).fill(0), MQTT_MALARIA: new Array(30 * 5).fill(0), 
-		NETWORK_SCAN: new Array(30 * 5).fill(0), RUDY: new Array(30 * 5).fill(0), SLOW_LORIS: new Array(30 * 5).fill(0), SLOW_READ: new Array(30 * 5).fill(0), UNKNOWN: new Array(30 * 5).fill(0),
-	});
+	
+	const workerRef = useRef(new Worker("/workerAttackTypeSecondsGroupped.js")); 
+	const [data, setData] = useState<{name: string, data: number[]}[]>([]);
 
-	const a = useRef<{ [P in Prediction['attackType']]: number }>({
-		APACHE_KILLER: 0, ARP_SPOOFING: 0, CAM_OVERFLOW: 0, MQTT_MALARIA: 0, NETWORK_SCAN: 0, RUDY: 0, SLOW_LORIS: 0,
-		SLOW_READ: 0, UNKNOWN: 0,
-	});
+	useEffect(() => {
+		workerRef.current.postMessage(predictions);
+		workerRef.current.onmessage = ({ data }) => setData(
+			data.map(([attackType, seconds]: [string, number[][]]) => ({ name: attackType, data: seconds.map((s) => s.length), }))
+		);
+	}, [predictions])
 
 	const lineChartOptions = {
 		colors: ["#4318FF", "#39B8FF", "#08fe71", "#aed124", "#48d0b4", "#2c476e", "#dd3938", "#cf00d0", "#8b1d46"],
 		chart: {
+		  type: "line",
 		  toolbar: {
 			show: false,
 		  },
@@ -54,13 +51,13 @@ export default function AttacksLast5Minutes(props: { [x: string]: any }) {
 		},
 		xaxis: {
 		  // type: "numeric",
-		  tickAmount: 4,
-		  categories: (attacks.APACHE_KILLER || []).map((_, i) => i),
+		  tickAmount: 8,
+		  categories: data.map((_, i) => i),
 		  labels: {
 		  	rotate: 0,
 			style: {  colors: "#A3AED0",  fontSize: "12px",  fontWeight: "500",},
 			formatter: function(value: string) {
-				return DateTime.now().minus({ seconds: ((5 * 30) - +(value || 0)) * 2, }).toRelative()
+				return DateTime.fromISO(predictions.at(-1).createdDate).minus({ seconds: (data[0].data.length - +(value || 0)), }).toRelative()
 			},
 		  },
 		  axisBorder: { show: false, },
@@ -68,30 +65,7 @@ export default function AttacksLast5Minutes(props: { [x: string]: any }) {
 		},
 		// color: ["#7551FF", "#39B8FF"],
 	};
-
-	useEffect(() => {
-		WebsocketClient.addListener((p: string) => {
-			try {
-				const prediction: Prediction = JSON.parse(p);
-				a.current[prediction.attackType]++;
-			} catch (error) {
-
-			}
-		})
-
-		interval(2000, abort.signal, () => {
-			const aux = { ...a.current,}
-			setAttacks((b) => Object.fromEntries(Object.entries(b).map(([n, [, ...d],]) => [n , [...d, aux[n as Prediction['attackType']], ],])) as any)
-			a.current = Object.fromEntries(Object.entries(a.current).map(([n,]) => [n, 0,])) as { [P in Prediction['attackType']]: number };
-		});
-
-		// return () => abort.abort();
-	}, []);
-
-	const transformToChartData = () => {
-		return Object.entries(attacks).map(([name, data,]) => ({ name: getTranslation(name), data, }));
-	}
-
+	
 	return (
 		<Card justifyContent='center' alignItems='center' flexDirection='column' w='100%' mb='0px'>
 			<Flex justify='space-between' ps='0px' pe='20px' pt='5px' w='100%' alignItems='center'>
@@ -103,7 +77,7 @@ export default function AttacksLast5Minutes(props: { [x: string]: any }) {
 					lineHeight='100%'
 					whiteSpace='nowrap'
 				>
-					Attacks in the last 5 minutes
+					Attacks Timeline
 				</Text>
 				<Flex align='center' w='100%' justify='end' >
 					<Button bg={boxBg} fontSize='sm' fontWeight='500' color={textColorSecondary} borderRadius='7px'>
@@ -143,7 +117,7 @@ export default function AttacksLast5Minutes(props: { [x: string]: any }) {
 
 				</Flex>
 				<Box minH='260px' w='100%' mt='auto'>
-					<LineChart chartData={transformToChartData()} chartOptions={lineChartOptions} />
+					<LineChart chartData={data.map(({data, name}) => ({ data, name: getTranslation(name) }))} chartOptions={lineChartOptions} />
 				</Box>
 			</Flex>
 		</Card>

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { attackTypePercentagesMock, attackVSNonAttackMock, attacksLastMonthMock, attacksTypePercentagesMock, dailyAttackCountsMock, geoIpLocationMock, } from 'mocks/statistics';
+import { predictionsURL } from 'services/predictions';
 import { attackTypePercentagesURL, attacksLastMonthCountURL, attacksVSNonAttacksCountURL, dailyAttacksCountURL, geoURL, } from 'services/statistics';
 import { Prediction } from 'types/predictions';
 import { GeoIpLocation, } from 'types/statistics';
@@ -54,6 +55,15 @@ export const getAttackTypePercentages = async () => {
         // return data;
         return attacksTypePercentagesMock;
     } catch (error) {
+        return null;
+    }
+}
+
+export const getAllPredictions = async (): Promise<Prediction[] | null> => {
+    try {
+        const { data } = await axios.get(predictionsURL());
+        return data;
+    } catch {
         return null;
     }
 }

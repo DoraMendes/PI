@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Flex, Input, Progress, Stack, Table, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, Input, Progress, Spinner, Stack, Table, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react';
 import {
 	Column,
 	createColumnHelper,
@@ -17,12 +17,10 @@ import Menu from 'components/menu/MainMenu';
 import { AndroidLogo, AppleLogo, WindowsLogo } from 'components/icons/Icons';
 import { AttackTypes, FiltersHistory, Prediction, Protocols } from 'types/predictions';
 import { getFilteredPredictions, getPredictions } from 'predictionsRequests';
-import { buildQueryString, getAttackName, getTranslation, qs } from 'utils/utils';
+import { getAttackName, getTranslation } from 'utils/utils';
 import MiniCalendar from 'components/calendar/MiniCalendar';
 import axios from 'axios';
 import { filteredPredictionsURL } from 'services/predictions';
-import { Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Select, Box as Box2 } from '@mui/material';
-import { Theme, useTheme } from '@mui/material/styles';
 import MultiSelectMenu from 'components/muliSelect';
 import { DateTime } from 'luxon';
 
@@ -191,6 +189,7 @@ export default function DataTables() {
 		e.preventDefault();
 
 		const { selectedDateRange, selectedAttack, selectedAttackType, selectedDestinationIP, selectedProtocol, selectedSourceIP} = filters
+		setIsFetching(true);
 		
 		getFilteredPredictions({
 			attackType: selectedAttackType, 
@@ -223,7 +222,7 @@ export default function DataTables() {
 						<option value="false">Normal</option>
 					</select> */}
 					<Stack spacing={4}>
-						<MultiSelectMenu onChange={(values) => setFilters({...filters, selectedAttack: values as unknown as boolean[]})} label={filters.selectedAttack?.map(getTranslation).join(', ') || "Both"} options={['false', 'true']} />
+						<MultiSelectMenu onChange={(values) => setFilters({...filters, selectedAttack: values as unknown as boolean[]})} label={filters.selectedAttack?.map((a) => getTranslation(String(a))).join(', ') || "Both"} options={['false', 'true']} />
 					</Stack>
 				</div>
 				<div className='filters__row filters__row--date'>
@@ -296,7 +295,7 @@ export default function DataTables() {
 						<option value="NETWORK_SCAN">Network Scan</option>
 					</select> */}
 					<Stack spacing={4}>
-						<MultiSelectMenu onChange={(values) => setFilters({...filters, selectedAttackType: values})} label={filters.selectedAttackType?.map(getTranslation).join(', ') || 'All'} options={AttackTypes} />
+						<MultiSelectMenu onChange={(values) => setFilters({...filters, selectedAttackType: values as typeof AttackTypes[number][]})} label={filters.selectedAttackType?.map(getTranslation).join(', ') || 'All'} options={[...AttackTypes]} />
 					</Stack>
 				</div>
 				<button type='submit'>
@@ -332,7 +331,8 @@ export default function DataTables() {
 				</Text>
 				{renderFilters()}
 			</Flex>
-			<Box>
+			<Box style={{ position: "relative", opacity: isFetching ? .5 : 1 }}>
+				{isFetching && <Spinner style={{ position: "absolute", left: "50%", top: "50%" }} zIndex={1000000} />}
 				<Table variant='simple' color='gray.500' mb='24px' mt="12px">
 					<Thead>
 						{table.getHeaderGroups().map((headerGroup) => (

@@ -11,6 +11,7 @@ import Footer from 'components/footer/FooterAdmin';
 import Navbar from 'components/navbar/NavbarAdmin';
 import Sidebar from 'components/sidebar/Sidebar';
 import { SidebarContext, } from 'contexts/SidebarContext';
+import { usePathname } from 'next/navigation';
 import { PropsWithChildren, useEffect, useState, } from 'react';
 import routes from 'routes';
 import { WebsocketClient, } from 'socket';
@@ -29,6 +30,7 @@ export default function AdminLayout(props: DashboardLayoutProps) {
   const { children, ...rest } = props;
   // states and functions
   const [fixed,] = useState(false);
+  const [,setRefresh] = useState(0);
   const [toggleSidebar, setToggleSidebar,] = useState(false);
   // functions for changing the states from components
   const { onOpen, } = useDisclosure();
@@ -36,6 +38,12 @@ export default function AdminLayout(props: DashboardLayoutProps) {
   useEffect(() => {
     window.document.documentElement.dir = 'ltr';
   });
+
+  const a = usePathname()
+
+  useEffect(() => {
+    setRefresh(new Date().getTime())
+  }, [a])
 
   WebsocketClient.init()
 

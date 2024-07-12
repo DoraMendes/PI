@@ -26,40 +26,73 @@ import MiniStatistics from 'components/card/MiniStatistics';
 import IconBox from 'components/icons/IconBox';
 import { MdBarChart, MdOutlinePercent, } from 'react-icons/md';
 import { getDailyAttacksCount, getAttackTypePercentages, } from 'statisticsRequests';
-import { useEffect, useState, } from 'react';
+import { useEffect, useRef, useState, } from 'react';
 import AttacksInTheLast5Min from 'views/admin/default/components/AttacksInTheLast5Min';
 import { AttackTypePercentages, } from 'types/statistics';
 import MapChart from 'views/admin/default/components/MapChart';
 import { WebsocketClient, } from 'socket';
 import { AttackTypes, Prediction, } from 'types/predictions';
 import PieCard from 'views/admin/default/components/PieCard';
+import { interval } from 'utils/timer';
+
+const abort = new AbortController();
 
 export default function Default() {
   const brandColor = useColorModeValue('brand.500', 'white');
   const boxBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
 
+  const dailyAttackCounterRef = useRef<number>(0);
+  const dailyNonAttacksCounterRef  = useRef<number>(0);
+  const attackTypeCounterRef = useRef<Partial<AttackTypePercentages>>({})
+
   const [dailyAttackCounter, setDailyAttackCounter,] = useState<number>(0);
   const [dailyNonAttacksCounter, setDailyNonAttacksCounter,] = useState<number>(0);
-  const [attackTypeCounter, setAttackTypeCounter,] = useState<Partial<AttackTypePercentages>>({});
-
+  const [attackTypeCounter, setAttackTypeCounter,] = useState<AttackTypePercentages>({
+      APACHE_KILLER: 0, ARP_SPOOFING: 0, CAM_OVERFLOW: 0, MQTT_MALARIA: 0, NETWORK_SCAN: 0,
+      RUDY: 0, SLOW_LORIS: 0, SLOW_READ: 0, UNKNOWN: 0,
+  });
+  
   useEffect(() => {
-    // getAttacksVSNonAttacksCount().then((a) => setAttacksVSNonAttacksCount(a));
-    // getDailyAttacksCount().then((a) => setDailyAttacks(a));
-    // getAttackTypePercentages().then((a) => setAttacktypepercentages(a));
-
     WebsocketClient.addListener((p: string) => {
 			try {
 				const {attackType, attack,}: Prediction = JSON.parse(p);
 				if (attack) {
-          setDailyAttackCounter((counter) => counter + 1)
-          setAttackTypeCounter((p) => ({ ...p, [attackType]: (p[attackType] || 0) + 1, }))
+          dailyAttackCounterRef.current += 1;
+          attackTypeCounterRef.current =  ({ ...attackTypeCounterRef.current , [attackType]: (attackTypeCounterRef.current[attackType] || 0) + 1, });
         }
-        else setDailyNonAttacksCounter((p) =>   p + 1);
+        else dailyNonAttacksCounterRef.current += 1;
 			} catch (error) {
         
 			}
 		})
+
+    interval(350, abort.signal, () => {
+        const dailyAttackCount = dailyAttackCounterRef.current;
+        const attackTypeCount = attackTypeCounterRef.current;
+        const dailyNonAttackCount = dailyNonAttacksCounterRef.current;
+
+        setDailyAttackCounter((c) => c + dailyAttackCount);
+        setAttackTypeCounter((p) => sumObjects(p, attackTypeCount));
+        setDailyNonAttacksCounter((c) => c + dailyNonAttackCount)
+
+        dailyAttackCounterRef.current = 0;
+        attackTypeCounterRef.current = {};
+        dailyNonAttacksCounterRef.current = 0;
+    });
+    
   }, []);
+
+  const sumObjects = <T extends Record<string, number>>(obj1: T, obj2: Record<string, number>): T => {
+    const result: Record<string, number> = {...obj1};
+
+    for (let key in obj1) {
+      if (obj2.hasOwnProperty(key)) {
+        result[key] = obj1[key] + obj2[key];
+      }
+    }
+  
+    return result as T;
+  }
 
 
   const attacksVSNonAttacksCountChartOptions: any = {
@@ -106,7 +139,7 @@ export default function Default() {
 
   const attacktypepercentagesChartOptions: any = {
     labels: AttackTypes,
-    colors: ["#4318FF", "#6AD2FF",],
+    colors: ["#4318FF", "#39B8FF", "#08fe71", "#aed124", "#48d0b4", "#2c476e", "#dd3938", "#cf00d0", "#8b1d46"],
     chart: {
       width: "50px",
       animations: {
@@ -145,11 +178,9 @@ export default function Default() {
       theme: "dark",
     },
   };
-
-  console.log(AttackTypes.map((t) => attackTypeCounter[t] || 0));
   
   return (
-    <Box pt={{ base: '130px', md: '80px', xl: '80px', }}>
+    <Box pt={{ base: '130px', md: '80px', xl: '80px', }} display="grid" gap="40px">
       <SimpleGrid
         columns={{ base: 1, md: 2, lg: 3, '2xl': 6, }}
         gap="20px"
@@ -187,12 +218,8 @@ export default function Default() {
 
       <MapChart />
 
-
-      <SimpleGrid columns={{ base: 1, md: 2, xl: 2, }} gap="20px" mb="20px">
-        <AttacksInTheLast5Min />
-      </SimpleGrid>
-
-
+      <AttacksInTheLast5Min />
+      
       <SimpleGrid columns={{ base: 1, md: 1, xl: 2, }} gap="20px" mb="20px">
         <PieCard pieChartData={[dailyAttackCounter, dailyNonAttacksCounter,]} pieChartOptions={attacksVSNonAttacksCountChartOptions } title='Attacks VS Non Attacks' />
         <PieCard pieChartData={AttackTypes.map((t) => attackTypeCounter[t] || 0)} pieChartOptions={attacktypepercentagesChartOptions} title='Attacks by Type' />

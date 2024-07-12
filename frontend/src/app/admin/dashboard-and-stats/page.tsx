@@ -23,69 +23,54 @@
 
 import {
   Box,
-  Flex,
-  FormLabel,
-  Image,
   Icon,
-  Select,
   SimpleGrid,
   useColorModeValue,
 } from '@chakra-ui/react';
-// Custom components
-// import MiniCalendar from 'components/calendar/MiniCalendar';
 import MiniStatistics from 'components/card/MiniStatistics';
 import IconBox from 'components/icons/IconBox';
-import {
-  MdAddTask,
-  MdAttachMoney,
-  MdBarChart,
-  MdFileCopy,
-} from 'react-icons/md';
-import CheckTable from 'views/admin/default/components/CheckTable';
-import ComplexTable from 'views/admin/default/components/ComplexTable';
-import DailyTraffic from 'views/admin/default/components/DailyTraffic';
+import { MdBarChart } from 'react-icons/md';
+import { useEffect, useRef, useState, } from 'react';
+import AttacksForever from 'views/admin/default/components/AttacksForever';
+import AttackVsNonAttacksForever from 'views/admin/default/components/AttacksVsNonAttacksPercentageForever';
+import MapChartForever from 'views/admin/default/components/MapChartForever';
+import { AttackTypes, Prediction } from 'types/predictions';
+import { getAllPredictions, getAttackTypePercentages } from 'statisticsRequests';
+import { DateTime } from 'luxon';
 import PieCard from 'views/admin/default/components/PieCard';
-import Tasks from 'views/admin/default/components/Tasks';
-import TotalSpent from 'views/admin/default/components/TotalSpent';
-import WeeklyRevenue from 'views/admin/default/components/WeeklyRevenue';
-import tableDataCheck from 'views/admin/default/variables/tableDataCheck';
-import tableDataComplex from 'views/admin/default/variables/tableDataComplex';
-// Assets
-import Usa from 'img/dashboards/usa.png';
-import { getAttacksVSNonAttacksCount, getDailyAttacksCount, getAttackTypePercentages, } from 'statisticsRequests';
-import { useEffect, useState, } from 'react';
-import AttacksInTheLast5Min from 'views/admin/default/components/AttacksInTheLast5Min';
-import { AttackTypePercentages, AttackVSNonAttack, } from 'types/statistics';
-import MapChart from 'views/admin/default/components/MapChart';
-import { gtAttackType, } from 'utils/utils';
-import { AttackTypes } from 'types/predictions';
+import { AttackTypePercentages } from 'types/statistics';
+import { getTranslation } from 'utils/utils';
 
 export default function Default() {
-  // Chakra Color Mode
-
   const brandColor = useColorModeValue('brand.500', 'white');
   const boxBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
 
-  const [attacksVSNonAttacksCount, setAttacksVSNonAttacksCount,] = useState<AttackVSNonAttack | null>(null);
-  const [dailyAttacks, setDailyAttacks,] = useState(0);
-  const [attacktypepercentages, setAttacktypepercentages,] = useState<AttackTypePercentages[]>([]);
-
-  useEffect(() => {
-    getAttacksVSNonAttacksCount().then((a) => setAttacksVSNonAttacksCount(a));
-    getDailyAttacksCount().then((a) => setDailyAttacks(a));
-    getAttackTypePercentages().then((a) => setAttacktypepercentages(a));
-  }, [])
-
-  const attacksVSNonAttacksCountChartData = [attacksVSNonAttacksCount ? attacksVSNonAttacksCount.attacks : 0, attacksVSNonAttacksCount ? attacksVSNonAttacksCount.nonAttacks : 0,];
+  const attacksCount = useRef(0);
+  const nonAttacksCount = useRef(0);
+  const highestDate = useRef<DateTime>(DateTime.now());
+  const attackTypeCount = useRef<Record<typeof AttackTypes[number], number>>({
+    APACHE_KILLER: 0, ARP_SPOOFING: 0, CAM_OVERFLOW: 0, MQTT_MALARIA: 0, NETWORK_SCAN: 0, RUDY: 0, SLOW_LORIS: 0,
+		SLOW_READ: 0, UNKNOWN: 0,
+  });
+  const [predictions, setPredictions] = useState<Prediction[] | null>(null);
   
-  const attacktypepercentagesChartData = () => {
-		const aux: any[] = [];
+  useEffect(() => {
+      getAllPredictions().then((newPredictions) => {
+          const createdDateCountMap = new Map<string, number>();
+          newPredictions
+            .forEach(({ createdDate }) => createdDateCountMap.set(createdDate, (createdDateCountMap.get(createdDate) || 0) + 1));
 
-		attacktypepercentages.forEach((a) => {
-			// aux.push(a.count);
-		})
-		return aux;
-	}
+          const auxMap = new Map<string, number>();
+          newPredictions
+            .forEach(({ attackType }) => auxMap.set(attackType, (auxMap.get(attackType) || 0) + 1));
+          
+          attackTypeCount.current = [...auxMap.entries()].reduce((acc, [k, v]) => ({...acc, [k]: v}), {}) as Record<typeof AttackTypes[number], number>;
+          highestDate.current = DateTime.fromISO([...createdDateCountMap.keys()].reduce((a,b) => auxMap.get(a) > auxMap.get(b) ? a : b));
+          attacksCount.current = newPredictions.filter((a) => a.attack).length;
+          nonAttacksCount.current = newPredictions.length -  attacksCount.current;
+          setPredictions(newPredictions);
+      });
+  }, []);
 
   const attacksVSNonAttacksCountChartOptions: any = {
     labels: ["Attacks", "Non Attacks",],
@@ -127,7 +112,7 @@ export default function Default() {
   };
 
   const attacktypepercentagesChartOptions: any = {
-    labels: AttackTypes,
+    labels: AttackTypes.map((a) => getTranslation(a)),
     colors: ["#4318FF", "#6AD2FF", "#EFF4FB", "#b2df8a", "#fb9a99", "#fdbf6f", "#cab2d6", "#6a3d9a", "#99ffcc", "#cc99ff", "#ffffcc", "#99ffcc",],
     chart: {
       width: "50px",
@@ -166,9 +151,9 @@ export default function Default() {
   };
 
   return (
-    <Box pt={{ base: '130px', md: '80px', xl: '80px', }}>
+    <Box pt={{ base: '130px', md: '80px', xl: '80px' }} display="grid" gap="40px">
       <SimpleGrid
-        columns={{ base: 1, md: 2, lg: 3, '2xl': 6, }}
+        columns={{ base: 1, md: 2, lg: 3, '2xl': 4, }}
         gap="20px"
         mb="20px"
       >
@@ -184,8 +169,8 @@ export default function Default() {
               }
             />
           }
-          name="Attacks today"
-          value={dailyAttacks}
+          name="Attacks"
+          value={attacksCount.current}
         />
         <MiniStatistics
           startContent={
@@ -199,21 +184,32 @@ export default function Default() {
             />
           }
           name="Percentage of Bad Traffic"
-          value={dailyAttacks}
+          value={((attacksCount.current / (attacksCount.current + nonAttacksCount.current)) * 100).toFixed(2)}
+        />
+        <MiniStatistics
+          startContent={
+            <IconBox
+              w="56px"
+              h="56px"
+              bg={boxBg}
+              icon={
+                <Icon w="32px" h="32px" as={MdBarChart} color={brandColor} />
+              }
+            />
+          }
+          name="Highest Day of Attacks"
+          value={highestDate.current.setLocale("pt").toLocaleString(DateTime.DATE_MED)}
         />
       </SimpleGrid>
 
-      <MapChart />
+      <MapChartForever predictions={predictions || []} />
 
-      
-      <SimpleGrid columns={{ base: 1, md: 2, xl: 2, }} gap="20px" mb="20px">
-        <AttacksInTheLast5Min />
-      </SimpleGrid>
+      <AttacksForever predictions={predictions || []} />
+      <AttackVsNonAttacksForever predictions={predictions || []} />
 
-      
       <SimpleGrid columns={{ base: 1, md: 1, xl: 2, }} gap="20px" mb="20px">
-          <PieCard pieChartData={attacksVSNonAttacksCountChartData} pieChartOptions={attacksVSNonAttacksCountChartOptions} title='Attacks VS Non Attacks' />
-          <PieCard pieChartData={attacktypepercentagesChartData()} pieChartOptions={attacktypepercentagesChartOptions} title='Attacks by Type' />
+        <PieCard pieChartData={[attacksCount.current, nonAttacksCount.current]} pieChartOptions={attacksVSNonAttacksCountChartOptions} title='Attacks VS Non Attacks' />
+        <PieCard pieChartData={AttackTypes.map((a) => attackTypeCount.current[a] || 0)} pieChartOptions={attacktypepercentagesChartOptions} title='Attacks by Type' />
       </SimpleGrid>
     </Box>
   );

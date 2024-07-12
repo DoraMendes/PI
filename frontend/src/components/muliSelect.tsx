@@ -10,10 +10,7 @@ const MultiSelectMenu = (props: MultiSelectMenuProps): JSX.Element => {
       {({ onClose }) => (
         <>
           <MenuButton
-            /* eslint-disable @typescript-eslint/ban-ts-comment */
-            // @ts-ignore <MenuButton> does have a 'type' prop because it is just a button. This is to make sure clicking this doesn't submit any forms.
             type="button"
-            /* eslint-enable @typescript-eslint/ban-ts-comment */
             backgroundColor={selectedOptions.length ? "purple.200" : "white"}
             color={selectedOptions.length ? "purple.500" : "gray.600"}
             borderColor={selectedOptions.length ? "purple.200" : "gray.300"}

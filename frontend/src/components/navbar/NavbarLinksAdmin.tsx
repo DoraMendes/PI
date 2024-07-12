@@ -338,7 +338,7 @@ export default function HeaderLinks(props: {
               borderRadius="8px"
               px="14px"
             >
-              <Text fontSize="sm"><SignOutButton></SignOutButton></Text>
+              <Text fontSize="sm"><SignOutButton redirectUrl='/sign-in'></SignOutButton></Text>
             </MenuItem>
           </Flex>
         </MenuList>

@@ -11,7 +11,6 @@ const mockAxios = new MockAdapter(axios);
 
 // const firstRow = predictionsRandomMock.map((p) => p.createdDate)
 const dates = predictionsRandomMock.map((p) => p.createdDate);
-console.log('new Date(Math.min(...arrOfDates))', new Date(Math.min(...dates)));
 
 describe('Stats page', () => {
     beforeEach(() => {

@@ -23,6 +23,7 @@ export const randomDate = (start: Date, end: Date)  => {
     return date;
 }
 
+
 export const generateRandomPoints = (center: any, radius: any, count: any) => {
     const points = [];
     for (let i=0; i<count; i++) {
@@ -117,33 +118,6 @@ export const getAttackName= (attackName: typeof AttackTypes[number]) => {
 export const generateRandomIP = () => {
     return (Math.floor(Math.random() * 255) + 1)+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255));
 }
-
-const queryParams = { status: 'Online', name: 'Jeff', age: '35' };
-
-export const buildQueryString = (params)  => {
-    const queryString = Object.entries(params)
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-    return queryString;
-}
-
-export const add = (a, o) => {
-  for (const [key, value] of Object.entries(o)) {
-    if (typeof value === 'object') add(a, value); // recursion
-    else a.push(`${key}=${value}`); // only if value not-an-object
-  }
-  return a;
-}
-
-
-export const qs = (paramObj) => {
-    return Object.keys(paramObj)
-    .map(
-    key => Array.isArray(paramObj[key]) ? 
-        paramObj[key].map(v => `${key}=${v}`).join('&') : 
-            `${key}=${paramObj[key]}`)
-.join('&')};
-
 
 export const getTranslation = (field: string) => {
      const res: Record<string, string> = {
