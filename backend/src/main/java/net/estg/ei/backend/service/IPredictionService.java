@@ -5,6 +5,7 @@ import net.estg.ei.backend.dto.GeoLocationDTO;
 import net.estg.ei.backend.entity.PredictionEntity;
 import net.estg.ei.backend.enums.AttackType;
 import org.antlr.v4.runtime.misc.Pair;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.io.IOException;
