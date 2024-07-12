@@ -9,3 +9,40 @@ option {
 }
 
 #map { }
+
+
+.filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;    
+}
+
+.filters__row {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+    flex-flow: column;
+}
+
+.filters__row > p {
+    display: inline-flex;
+    justify-content: center;
+}
+
+
+.filters__row > * {
+    width: 100%;
+}
+
+.filters__row--date {
+    position: relative;
+}
+
+.filters__row--date > div {
+    position: absolute;
+    top: 50px;
+    z-index: 1000;
+    min-width: 100%;
+    background-color: white;
+    border: 1px solid var(--chakra-colors-gray-300)
+}

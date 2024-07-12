@@ -11,6 +11,6 @@ export const predictionsURL = () => {
 } 
 
 export const filteredPredictionsURL = (params: Record<string, unknown> = {}) => {
-    const query = queryString.stringify(params); // TODO: funcao
-    return `${API_URL}/predictions/filtered/?${query}`;
+    const query = queryString.stringify(params, {skipEmptyString: true}); // TODO: funcao
+    return `${API_URL}/predictions/filtered?${query}`;
 } 

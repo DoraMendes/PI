@@ -16,7 +16,7 @@ export default function AppWrappers({ children }: { children: ReactNode }) {
   const path = usePathname();
 
   const router = useRouter();
-
+  
   React.useEffect(() => {
     if (!auth.isSignedIn) clerk.redirectToSignIn();
     else if (path.includes("/sign-in")) router.push('/admin/default');
@@ -24,7 +24,7 @@ export default function AppWrappers({ children }: { children: ReactNode }) {
 
   return (
     <CacheProvider>
-      <ChakraProvider theme={theme}>{children}</ChakraProvider>{' '}
+        <ChakraProvider theme={theme}>{children}</ChakraProvider>{' '}
     </CacheProvider>
   );
 }

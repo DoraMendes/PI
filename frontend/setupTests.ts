@@ -19,3 +19,8 @@ jest.mock('mapbox-gl', () => ({
 
 
 
+jest.mock('query-string' , () => ({
+  //mock whatever you use from query-string
+  parse :jest.fn(),
+  stringify: jest.fn()
+}));

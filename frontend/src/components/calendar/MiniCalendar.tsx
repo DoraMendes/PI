@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import Calendar from 'react-calendar';
+import Calendar, { OnChangeDateRangeCallback } from 'react-calendar';
 import { Text, Icon } from '@chakra-ui/react';
 import 'react-calendar/dist/Calendar.css';
 // Chakra imports
@@ -10,9 +10,10 @@ import Card from 'components/card/Card';
 
 export default function MiniCalendar(props: {
   selectRange: boolean;
+  onChange(values: [Date] | [Date, Date]): void;
   [x: string]: any;
 }) {
-  const { selectRange, ...rest } = props;
+  const { selectRange, onChange: onChangeParent, ...rest } = props;
   const [value, onChange] = useState(new Date());
   return (
     <Card
@@ -25,7 +26,7 @@ export default function MiniCalendar(props: {
       {...rest}
     >
       <Calendar
-        onChange={onChange}
+        onChange={(a: [Date] | [Date, Date]) => { onChange(a as any); onChangeParent(a); }}
         value={value}
         selectRange={selectRange}
         view={'month'}
