@@ -1,9 +1,16 @@
 import csv
+import socket
+import struct
+from random import randint
 
 # SLOWHTTPTEST tool expects a target to send http packets to. So this is a just a dummy http server so we have a target
 # subprocess.Popen(["python3", "-m", "http.server", "4000"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 class CollectTraffic:
+    n = 0
+    ip_dst = ""
+    ip_src = ""
+    
     def __iter__(self):
         self.f = open('/mnt/IP-Based Packets Dataset.csv', newline='')
         self.reader = csv.reader(self.f)
@@ -11,6 +18,11 @@ class CollectTraffic:
         return self
 
     def __next__(self):
+        if self.n == 0:
+            self.ip_dst = socket.inet_ntoa(struct.pack('>I', randint(1, 0xffffffff)))
+            self.ip_src = socket.inet_ntoa(struct.pack('>I', randint(1, 0xffffffff)))
+            self.n = randint(1, 20000)
+
         row = next(self.reader)
         if row != None:
             obj = {}
@@ -19,7 +31,14 @@ class CollectTraffic:
             
             del obj['is_malicious']
             del obj['attack_type']
-            return obj
+            
+            return {
+                "model_data": obj,
+                "extra": {
+                    "ip_src": self.ip_src,
+                    "ip_dst": self.ip_dst,
+                }
+            }
         else:
             self.f.close();
             raise StopIteration

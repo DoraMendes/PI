@@ -52,8 +52,8 @@ import tableDataCheck from 'views/admin/default/variables/tableDataCheck';
 import tableDataComplex from 'views/admin/default/variables/tableDataComplex';
 // Assets
 import Usa from 'img/dashboards/usa.png';
-import { getAttacksVSNonAttacksCount } from 'statisticsRequests';
-import { useEffect, useState } from 'react';
+import { getAttacksVSNonAttacksCount, } from 'statisticsRequests';
+import { useEffect, useState, } from 'react';
 import MapChart from 'views/admin/default/components/MapChart';
 
 export default function Default() {
@@ -61,20 +61,12 @@ export default function Default() {
 
   const brandColor = useColorModeValue('brand.500', 'white');
   const boxBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
-
-  const [attacksVSNonAttacksCount, setAttacksVSNonAttacksCount] = useState([]);
-
-  useEffect(() => {
-    getAttacksVSNonAttacksCount().then((a) => setAttacksVSNonAttacksCount(a))
-  }, [])
-  
-  console.log('attacksVSNonAttacksCount', attacksVSNonAttacksCount);
   
 
   return (
-    <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
+    <Box pt={{ base: '130px', md: '80px', xl: '80px', }}>
       <SimpleGrid
-        columns={{ base: 1, md: 2, lg: 3, '2xl': 6 }}
+        columns={{ base: 1, md: 2, lg: 3, '2xl': 6, }}
         gap="20px"
         mb="20px"
       >
@@ -159,20 +151,20 @@ export default function Default() {
         />
       </SimpleGrid>
 
-      <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px" mb="20px">
+      <SimpleGrid columns={{ base: 1, md: 2, xl: 2, }} gap="20px" mb="20px">
         <TotalSpent />
         <WeeklyRevenue />
       </SimpleGrid>
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap="20px" mb="20px">
+      <SimpleGrid columns={{ base: 1, md: 1, xl: 2, }} gap="20px" mb="20px">
         <CheckTable tableData={tableDataCheck} />
-        <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
+        <SimpleGrid columns={{ base: 1, md: 2, xl: 2, }} gap="20px">
           <DailyTraffic />
-          <PieCard chartData={attacksVSNonAttacksCount} title='attacks vs non attacks' />
+          {/* <PieCard chartData={attacksVSNonAttacksCount} title='attacks vs non attacks' /> */}
         </SimpleGrid>
       </SimpleGrid>
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap="20px" mb="20px">
+      <SimpleGrid columns={{ base: 1, md: 1, xl: 2, }} gap="20px" mb="20px">
         <ComplexTable tableData={tableDataComplex} />
-        <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
+        <SimpleGrid columns={{ base: 1, md: 2, xl: 2, }} gap="20px">
           <Tasks />
           {/* <MiniCalendar h="100%" minW="100%" selectRange={false} /> */}
         </SimpleGrid>

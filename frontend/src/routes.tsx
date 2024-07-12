@@ -1,11 +1,14 @@
-import { Icon } from '@chakra-ui/react';
+import { Icon, } from '@chakra-ui/react';
 import {
   MdBarChart,
   MdPerson,
   MdHome,
   MdLock,
   MdOutlineShoppingCart,
+  MdHistory,
+  MdOutlineLiveTv,
 } from 'react-icons/md';
+
 
 // Admin Imports
 // import MainDashboard from './pages/admin/default';
@@ -16,59 +19,73 @@ import {
 
 // Auth Imports
 // import SignInCentered from './pages/auth/sign-in';
-import { IRoute } from 'types/navigation';
+import { IRoute, } from 'types/navigation';
 
 const routes: IRoute[] = [
   {
-    name: 'Dashboard',
+    name: 'Real Time',
     layout: '/admin',
     path: '/default',
-    icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
+    icon: <Icon as={MdOutlineLiveTv} width="20px" height="20px" color="inherit" />,
   },
   {
-    name: 'Main Dashboard',
+    name: 'Dashboard & Stats',
     layout: '/admin',
-    path: '/dashboard',
-    icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
-  },
-  {
-    name: 'NFT Marketplace',
-    layout: '/admin',
-    path: '/nft-marketplace',
-    icon: (
-      <Icon
-        as={MdOutlineShoppingCart}
-        width="20px"
-        height="20px"
-        color="inherit"
-      />
-    ),
-    secondary: true,
-  },
-  {
-    name: 'Data Tables',
-    layout: '/admin',
+    path: '/dashboard-and-stats',
     icon: <Icon as={MdBarChart} width="20px" height="20px" color="inherit" />,
-    path: '/data-tables',
   },
   {
-    name: 'Profile',
+    name: 'History',
     layout: '/admin',
-    path: '/profile',
-    icon: <Icon as={MdPerson} width="20px" height="20px" color="inherit" />,
+    path: '/data-tables',
+    icon: <Icon as={MdHistory} width="20px" height="20px" color="inherit" />,
   },
-  {
-    name: 'Sign In',
-    layout: '/auth',
-    path: '/sign-in',
-    icon: <Icon as={MdLock} width="20px" height="20px" color="inherit" />,
-  },
-  {
-    name: 'RTL Admin',
-    layout: '/rtl',
-    path: '/rtl-default',
-    icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
-  },
+
+  // TODO: delete this router if not needed in the future
+  // {
+  //   name: 'Main Dashboard',
+  //   layout: '/admin',
+  //   path: '/dashboard',
+  //   icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
+  // },
+  // {
+  //   name: 'NFT Marketplace',
+  //   layout: '/admin',
+  //   path: '/nft-marketplace',
+  //   icon: (
+  //     <Icon
+  //       as={MdOutlineShoppingCart}
+  //       width="20px"
+  //       height="20px"
+  //       color="inherit"
+  //     />
+  //   ),
+  //   secondary: true,
+  // },
+  // {
+  //   name: 'Data Tables',
+  //   layout: '/admin',
+  //   icon: <Icon as={MdBarChart} width="20px" height="20px" color="inherit" />,
+  //   path: '/data-tables',
+  // },
+  // {
+  //   name: 'Profile',
+  //   layout: '/admin',
+  //   path: '/profile',
+  //   icon: <Icon as={MdPerson} width="20px" height="20px" color="inherit" />,
+  // },
+  // {
+  //   name: 'Sign In',
+  //   layout: '/auth',
+  //   path: '/sign-in',
+  //   icon: <Icon as={MdLock} width="20px" height="20px" color="inherit" />,
+  // },
+  // {
+  //   name: 'RTL Admin',
+  //   layout: '/rtl',
+  //   path: '/rtl-default',
+  //   icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
+  // },
 ];
 
 export default routes;

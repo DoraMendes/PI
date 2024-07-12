@@ -35,7 +35,7 @@ class PreProcess:
     def preprocess(self, obj):
         preProcessedObj = {
             "http.content_length": [self.__getFieldValue(obj, 'http.content_length', self.__getAverageValue('http.content_length'))],
-            "http.request": [-1.0],
+            "http.request": [self.__getFieldValue(obj, 'http.request', -1)],
             "http.response.code": [self.__getFieldValue(obj, 'http.response.code', self.__getAverageValue('http.response.code'))],
             "http.response_number":  [self.__getFieldValue(obj, 'http.response_number', -1)],
             "http.time": [self.__getFieldValue(obj, 'http.time', self.__getAverageValue('http.time'))],
@@ -48,7 +48,7 @@ class PreProcess:
             "tcp.flags.cwr": [self.__getFieldValue(obj, 'tcp.flags.cwr', -1)],
             "tcp.flags.ecn": [self.__getFieldValue(obj, 'tcp.flags.ece', -1)], 
             "tcp.flags.fin": [self.__getFieldValue(obj, 'tcp.flags.fin', 2)], 
-            "tcp.flags.ns":  [float(self.__is_ns_flag_set(self.__getFieldValue(obj, 'tcp.flags.ns', -2)))],
+            "tcp.flags.ns":  [float(self.__is_ns_flag_set(self.__getFieldValue(obj, 'tcp.flags.ns', -1)))],
             "tcp.flags.res": [self.__getFieldValue(obj, 'tcp.flags.res', -1)], 
             "tcp.flags.syn": [self.__getFieldValue(obj, 'tcp.flags.syn', 2)],
             "tcp.flags.urg": [self.__getFieldValue(obj, 'tcp.flags.urg', -1)],

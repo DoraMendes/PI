@@ -1,7 +1,4 @@
-export interface AttacksLastMonth {
-    date: Date;
-    count: number;
-}
+import { Prediction } from "./predictions";
 
 export interface AttackVSNonAttack {
     attacks: number;
@@ -15,8 +12,4 @@ export interface GeoIpLocation {
     longitude: string;
 }
 
-export interface AttackTypePercentages {
-    type: number;
-    count: number;
-    percentage: number;
-}
+export type AttackTypePercentages = { [P in Prediction['attackType']]: number };

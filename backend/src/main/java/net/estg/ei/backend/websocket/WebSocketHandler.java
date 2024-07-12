@@ -10,7 +10,6 @@ import net.estg.ei.backend.utils.ProtocolUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -113,20 +112,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
       }
     }
   }
-
-  @Scheduled(fixedRateString = "${application.keepalive.broadcast:10000}")
-  public void sendKeepAliveMessage() {
-    for (WebSocketSession session : sessions) {
-      if (session.isOpen()) {
-        try {
-          session.sendMessage(new TextMessage("Session is okay"));
-        } catch (Exception e) {
-          System.out.println("Error sending keep-alive message: " + e.getMessage());
-        }
-      }
-    }
-  }
-
   @Getter
   @Setter
   @NoArgsConstructor

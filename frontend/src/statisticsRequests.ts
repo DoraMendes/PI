@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { attackTypePercentagesMock, attackVSNonAttackMock, attacksLastMonthMock, attacksTypePercentagesMock, dailyAttackCountsMock, geoIpLocationMock } from 'mocks/statistics';
-import { attackTypePercentagesURL, attacksLastMonthCountURL, attacksVSNonAttacksCountURL, dailyAttacksCountURL, geoURL } from 'services/statistics';
-import { AttacksLastMonth, Geo } from 'types/statistics';
+import { attackTypePercentagesMock, attackVSNonAttackMock, attacksLastMonthMock, attacksTypePercentagesMock, dailyAttackCountsMock, geoIpLocationMock, } from 'mocks/statistics';
+import { attackTypePercentagesURL, attacksLastMonthCountURL, attacksVSNonAttacksCountURL, dailyAttacksCountURL, geoURL, } from 'services/statistics';
+import { Prediction } from 'types/predictions';
+import { GeoIpLocation, } from 'types/statistics';
 
 export const getDailyAttacksCount = async (): Promise<number | null> => {
     try {
@@ -14,11 +15,11 @@ export const getDailyAttacksCount = async (): Promise<number | null> => {
 }
 
 // TODO: mudar a estrutura do output e tipar
-export const getAttacksLastMonthCount = async (): Promise<AttacksLastMonth[]> => {
+export const getAttacksLast5MinutesCount = async (): Promise<{ [x in Prediction['attackType']]: number[] }> => {
     try {
         // const { data } = await axios.get(attacksLastMonthCountURL());
         // return data;
-        return attacksLastMonthMock;
+        return {} as any;
     } catch (error) {
         return null;
     }
@@ -36,11 +37,11 @@ export const getAttacksVSNonAttacksCount = async () => {
 }
 
 // TODO: ver parametro
-export const getGeo = async (id: number): Promise<Geo> => {
+export const getGeo = async (id: number): Promise<GeoIpLocation> => {
     try {
         // const { data } = await axios.get(geoURL(id));
         // return data;
-        return geoIpLocationMock();
+        return geoIpLocationMock({lat: 1, lng: 3,});
     } catch (error) {
         return null;
     }
