@@ -176,39 +176,44 @@ export default function SignIn2() {
                 </Text>
                 <HSeparator />
               </Flex>
-              <form onSubmit={submit}>
                 <FormControl>
+                  <Clerk.Field name="identifier">
+                    <Clerk.Input value={username} hidden />
+                    <FormLabel
+                      display="flex"
+                      ms="4px"
+                      fontSize="sm"
+                      fontWeight="500"
+                      color={textColor}
+                      mb="8px"
+                    >
+                      Email<Text color={brandStars}>*</Text>
+                    </FormLabel>
+                    <Input
+                      isRequired={true}
+                      variant="auth"
+                      fontSize="sm"
+                      ms={{ base: '0px', md: '0px' }}
+                      type="text"
+                      placeholder="mail@simmmple.com"
+                      mb="24px"
+                      fontWeight="500"
+                      size="lg"
+                      onChange={({currentTarget: {value}}) => setUsername(value)}
+                    />
+                    <Clerk.FieldError />
+                  </Clerk.Field>
+                
+                <Clerk.Field name="password">
+                  <Clerk.Input value={password} hidden />
                   <FormLabel
-                    display="flex"
-                    ms="4px"
-                    fontSize="sm"
-                    fontWeight="500"
-                    color={textColor}
-                    mb="8px"
-                  >
-                    Email<Text color={brandStars}>*</Text>
-                  </FormLabel>
-                  <Input
-                    isRequired={true}
-                    variant="auth"
-                    fontSize="sm"
-                    ms={{ base: '0px', md: '0px' }}
-                    type="text"
-                    placeholder="mail@simmmple.com"
-                    mb="24px"
-                    fontWeight="500"
-                    size="lg"
-                    onChange={({currentTarget: {value}}) => setUsername(value)}
-                  />
-
-                  <FormLabel
-                    ms="4px"
-                    fontSize="sm"
-                    fontWeight="500"
-                    color={textColor}
-                    display="flex"
-                  >
-                    Password<Text color={brandStars}>*</Text>
+                      ms="4px"
+                      fontSize="sm"
+                      fontWeight="500"
+                      color={textColor}
+                      display="flex"
+                    >
+                      Password<Text color={brandStars}>*</Text>
                   </FormLabel>
                   <InputGroup size="md">
                     <Input
@@ -230,68 +235,31 @@ export default function SignIn2() {
                       />
                     </InputRightElement>
                   </InputGroup>
-                  <Flex justifyContent="space-between" align="center" mb="24px">
-                    <FormControl display="flex" alignItems="center">
-                      <Checkbox
-                        id="remember-login"
-                        colorScheme="brandScheme"
-                        me="10px"
-                      />
-                      <FormLabel
-                        htmlFor="remember-login"
-                        mb="0"
-                        fontWeight="normal"
-                        color={textColor}
-                        fontSize="sm"
-                      >
-                        Keep me logged in
-                      </FormLabel>
-                    </FormControl>
-                    <Link href="/auth/forgot-password">
-                      <Text
-                        color={textColorBrand}
-                        fontSize="sm"
-                        w="124px"
-                        fontWeight="500"
-                      >
-                        Forgot password?
-                      </Text>
-                    </Link>
-                  </Flex>
-                  <Button
-                    type='submit'
+                </Clerk.Field>
+              </FormControl>
+              <Flex justifyContent="space-between" align="center" mb="24px">
+                <SignIn.Action navigate="forgot-password">
+                  <Text
+                    color={textColorBrand}
                     fontSize="sm"
-                    variant="brand"
+                    w="124px"
                     fontWeight="500"
-                    w="100%"
-                    h="50"
-                    mb="24px"
                   >
-                    Sign In
-                  </Button>
-                </FormControl>
-              </form>
-              <Flex
-                flexDirection="column"
-                justifyContent="center"
-                alignItems="start"
-                maxW="100%"
-                mt="0px"
-              >
-                <Link href="/auth/sign-up">
-                  <Text color={textColorDetails} fontWeight="400" fontSize="14px">
-                    Not registered yet?
-                    <Text
-                      color={textColorBrand}
-                      as="span"
-                      ms="5px"
-                      fontWeight="500"
-                    >
-                      Create an Account
-                    </Text>
+                    Forgot password?
                   </Text>
-                </Link>
+                </SignIn.Action>
               </Flex>
+              <Button
+                type='submit'
+                fontSize="sm"
+                variant="brand"
+                fontWeight="500"
+                w="100%"
+                h="50"
+                mb="24px"
+              >
+                <SignIn.Action submit>Sign In</SignIn.Action>
+              </Button>
             </Flex>
           </Flex>
         </DefaultAuthLayout>
