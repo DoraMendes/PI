@@ -2,7 +2,6 @@ package net.estg.ei.backend.ws;
 
 import net.estg.ei.backend.adapters.AbstractAdapter;
 import net.estg.ei.backend.adapters.PredictionAdapter;
-import net.estg.ei.backend.dto.AttacksVsNonAttacksDTO;
 import net.estg.ei.backend.dto.FilterDTO;
 import net.estg.ei.backend.dto.GeoLocationDTO;
 import net.estg.ei.backend.dto.PredictionDTO;
@@ -89,7 +88,7 @@ public class PredictionsRESTImpl extends AbstractRESTImpl<PredictionEntity, Pred
    *]
    */
   @GetMapping("/attackvsnonattack")
-  public AttacksVsNonAttacksDTO countAttacksVsNonAttacks() {
+  public List<Object[]> countAttacksVsNonAttacks() {
     return predictionService.countAttacksVsNonAttacks();
   }
   /*
