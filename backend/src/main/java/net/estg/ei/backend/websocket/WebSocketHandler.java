@@ -94,7 +94,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
       if (isAttack) { //Only broadcast attacks after a certain number have been detected in succession
         if (this.scheduledFuture == null) {
-            final int xSeconds = 5;
+            final int xSeconds = 30;
             @SuppressWarnings("deprecation")
             PeriodicTrigger periodicTrigger = new PeriodicTrigger(xSeconds, TimeUnit.SECONDS);
             this.scheduledFuture = taskScheduler.schedule(() -> this.messageService.sendToAllNotification("Your Infrastructure is under Attack"), periodicTrigger);
@@ -106,8 +106,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
           consecutiveAttackCount = 0; // Reset the counter after broadcasting
         }
       } else {
-        this.scheduledFuture.cancel(false);
-        this.scheduledFuture = null;
+        if (scheduledFuture != null) {
+            this.scheduledFuture.cancel(false);
+            this.scheduledFuture = null;
+        }
 
         consecutiveAttackCount = 0; // Reset the counter if an attack is not detected
         broadcastPrediction(entity, session); //Broadcast non-malicious attack anyway
