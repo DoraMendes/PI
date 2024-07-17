@@ -16,7 +16,7 @@ import {
 } from 'utils/navigation'
 
 interface DashboardLayoutProps extends PropsWithChildren {
-  [x: string]: any
+  [x: string]: any;
 }
 
 // Custom Chakra theme
