@@ -73,7 +73,6 @@ export default function AdminLayout(props: DashboardLayoutProps) {
             .pushManager.subscribe({ userVisibleOnly: true,  applicationServerKey: urlB64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) });
         if (subscription) {
             subscribe(subscription.toJSON()); 
-            subscription.toJSON()
         }
         console.info('The user accepted the permission request.');
       }

@@ -10,7 +10,9 @@ import net.estg.ei.backend.utils.AttackTypeUtils;
 import net.estg.ei.backend.utils.ProtocolUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -19,9 +21,12 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import io.netty.util.concurrent.ScheduledFuture;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @EnableScheduling
@@ -29,6 +34,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
   private final ObjectMapper mapper = new ObjectMapper();
   private static final CopyOnWriteArrayList<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+  private ScheduledFuture<?> scheduledFuture = null;
 
   @Value("${application.attack.threshold:5}") // Attack Threshold for broadcasting, if not defined in property file default = 5
   private static final int attackThreshold = 5;
@@ -39,6 +45,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
   @Autowired
   private IMessageService messageService;
+
+  @Autowired
+  private TaskScheduler taskScheduler;
+
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session)
@@ -82,15 +92,24 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
       session.sendMessage(new TextMessage("Prediction saved: " + data.getPrediction()));
 
+
       if (isAttack) { //Only broadcast attacks after a certain number have been detected in succession
+        if (this.scheduledFuture == null) {
+            final int xSeconds = 5;
+            @SuppressWarnings("deprecation")
+            PeriodicTrigger periodicTrigger = new PeriodicTrigger(xSeconds, TimeUnit.SECONDS);
+            this.scheduledFuture = (ScheduledFuture<?>) taskScheduler.schedule(() -> this.messageService.sendToAllNotification("Your Infrastructure is under Attack"), periodicTrigger);
+        }
         consecutiveAttackCount++;
         if (consecutiveAttackCount >= attackThreshold) {
           // Broadcast the payload back to all connected clients
           broadcastPrediction(entity, session);
           consecutiveAttackCount = 0; // Reset the counter after broadcasting
         }
-        this.messageService.sendToAllNotification("Your Infrastructure is under Attack");
       } else {
+        this.scheduledFuture.cancel(false);
+        this.scheduledFuture = null;
+
         consecutiveAttackCount = 0; // Reset the counter if an attack is not detected
         broadcastPrediction(entity, session); //Broadcast non-malicious attack anyway
       }
