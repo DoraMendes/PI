@@ -4,6 +4,7 @@ import lombok.*;
 import net.estg.ei.backend.adapters.PredictionAdapter;
 import net.estg.ei.backend.entity.PredictionEntity;
 import net.estg.ei.backend.enums.AttackType;
+import net.estg.ei.backend.service.IMessageService;
 import net.estg.ei.backend.service.IPredictionService;
 import net.estg.ei.backend.utils.AttackTypeUtils;
 import net.estg.ei.backend.utils.ProtocolUtils;
@@ -35,6 +36,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
   @Autowired
   private IPredictionService predictionService;
+
+  @Autowired
+  private IMessageService messageService;
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session)
@@ -85,6 +89,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
           broadcastPrediction(entity, session);
           consecutiveAttackCount = 0; // Reset the counter after broadcasting
         }
+        this.messageService.sendToAllNotification("Your Infrastructure is under Attack");
       } else {
         consecutiveAttackCount = 0; // Reset the counter if an attack is not detected
         broadcastPrediction(entity, session); //Broadcast non-malicious attack anyway

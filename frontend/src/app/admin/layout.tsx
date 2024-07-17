@@ -11,6 +11,7 @@ import Footer from 'components/footer/FooterAdmin';
 import Navbar from 'components/navbar/NavbarAdmin';
 import Sidebar from 'components/sidebar/Sidebar';
 import { SidebarContext, } from 'contexts/SidebarContext';
+import { subscribe } from 'messagesRequests';
 import { usePathname } from 'next/navigation';
 import { PropsWithChildren, useEffect, useState, } from 'react';
 import routes from 'routes';
@@ -43,9 +44,54 @@ export default function AdminLayout(props: DashboardLayoutProps) {
 
   useEffect(() => {
     setRefresh(new Date().getTime())
-  }, [a])
+  }, [a]);
 
-  WebsocketClient.init()
+
+  const urlB64ToUint8Array = (base64String: string) =>  {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+      const rawData = atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+  }
+
+  const b = async () => {
+      const result = await Notification.requestPermission();
+      if (result === 'denied') {
+        console.error('The user explicitly denied the permission request.');
+        return;
+      }
+      if (result === 'granted') { 
+        const subscription = await (await navigator.serviceWorker.getRegistration())
+            .pushManager.subscribe({ userVisibleOnly: true,  applicationServerKey: urlB64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) });
+        if (subscription) {
+            subscribe(subscription.toJSON()); 
+            subscription.toJSON()
+        }
+        console.info('The user accepted the permission request.');
+      }
+  };
+
+  useEffect(() => {
+      WebsocketClient.init();
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        navigator.serviceWorker.register('/service-worker.js').then(serviceWorkerRegistration => {
+          console.info('Service worker was registered.');
+          b();
+        }).catch(error => {
+          console.error('An error occurred while registering the service worker.');
+        });
+      } else {
+        console.error('Browser does not support service workers or push messages.');
+      }
+  }, [])
 
   const bg = useColorModeValue('secondaryGray.300', 'navy.900');
 
