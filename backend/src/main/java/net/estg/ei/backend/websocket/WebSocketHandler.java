@@ -21,11 +21,10 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import io.netty.util.concurrent.ScheduledFuture;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -98,7 +97,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             final int xSeconds = 5;
             @SuppressWarnings("deprecation")
             PeriodicTrigger periodicTrigger = new PeriodicTrigger(xSeconds, TimeUnit.SECONDS);
-            this.scheduledFuture = (ScheduledFuture<?>) taskScheduler.schedule(() -> this.messageService.sendToAllNotification("Your Infrastructure is under Attack"), periodicTrigger);
+            this.scheduledFuture = taskScheduler.schedule(() -> this.messageService.sendToAllNotification("Your Infrastructure is under Attack"), periodicTrigger);
         }
         consecutiveAttackCount++;
         if (consecutiveAttackCount >= attackThreshold) {
