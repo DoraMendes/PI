@@ -8,3 +8,13 @@ self.addEventListener('push', function(event) {
 
     event.waitUntil(promiseChain);
 });
+
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+    event.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+        for (const client of clientList) {
+            if (client.url === "/admin/default" && 'focus' in client) return client.focus()
+        }
+        if (clients.openWindow) clients.openWindow("/admin/default");
+    }));
+});
