@@ -107,8 +107,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
       } else {
         if (scheduledFuture != null) {
-            this.scheduledFuture.cancel(true);
-            this.scheduledFuture = null;
+            boolean stopped = this.scheduledFuture.cancel(true);
+            if (stopped) this.scheduledFuture = null;
         }
 
         consecutiveAttackCount = 0; // Reset the counter if an attack is not detected
