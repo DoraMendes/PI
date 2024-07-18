@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 as builder
+FROM ubuntu:22.04 AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -14,7 +14,7 @@ RUN wget https://2.na.dl.wireshark.org/src/all-versions/wireshark-4.2.5.tar.xz -
     && cmake -S . -B build -DBUILD_wireshark=OFF -DBUILD_dftest=OFF -DCMAKE_INSTALL_PREFIX=/tmp/wireshark-latest/install \
     && cmake --build build --target install -- -j$(nproc)
 
-FROM ubuntu:22.04 as runtime
+FROM ubuntu:22.04 AS runtime
 
 ARG ARCH
 

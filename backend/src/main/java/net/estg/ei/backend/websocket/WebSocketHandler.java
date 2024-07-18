@@ -107,7 +107,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
       } else {
         if (scheduledFuture != null) {
-            this.scheduledFuture.cancel(false);
+            this.scheduledFuture.cancel(true);
             this.scheduledFuture = null;
         }
 
