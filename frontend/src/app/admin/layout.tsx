@@ -65,16 +65,19 @@ export default function AdminLayout(props: DashboardLayoutProps) {
   const b = async () => {
       const result = await Notification.requestPermission();
       if (result === 'denied') {
-        console.error('The user explicitly denied the permission request.');
         return;
       }
-      if (result === 'granted') { 
-        const subscription = await (await navigator.serviceWorker.getRegistration())
-            .pushManager.subscribe({ userVisibleOnly: true,  applicationServerKey: urlB64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) });
-        if (subscription) {
-            subscribe(subscription.toJSON()); 
+      
+      if (result === 'granted') {
+        const registration = await navigator.serviceWorker.getRegistration();
+        const alreadySubscribed = !!(await registration.pushManager.getSubscription());
+
+        if (!alreadySubscribed) {
+          const subscription = await registration.pushManager.subscribe(
+            { userVisibleOnly: true,  applicationServerKey: urlB64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) }
+          );
+          if (subscription) subscribe(subscription.toJSON());
         }
-        console.info('The user accepted the permission request.');
       }
   };
 
@@ -82,13 +85,8 @@ export default function AdminLayout(props: DashboardLayoutProps) {
       WebsocketClient.init();
       if ('serviceWorker' in navigator && 'PushManager' in window) {
         navigator.serviceWorker.register('/service-worker.js').then(serviceWorkerRegistration => {
-          console.info('Service worker was registered.');
           b();
-        }).catch(error => {
-          console.error('An error occurred while registering the service worker.');
-        });
-      } else {
-        console.error('Browser does not support service workers or push messages.');
+        }).catch(error => {});
       }
   }, [])
 
