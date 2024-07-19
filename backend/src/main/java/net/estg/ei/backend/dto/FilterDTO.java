@@ -15,8 +15,8 @@ public class FilterDTO
   private String protocol;
   private Boolean isAttack;
   private String attackType;
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   private Date dateMin;
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   private Date dateMax;
 }
