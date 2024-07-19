@@ -8,6 +8,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider>
       <html lang="en">
+        <title>IoMT Dashboard</title>
         <body>
           <AppWrappers>{children}</AppWrappers>
         </body>

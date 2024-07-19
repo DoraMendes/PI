@@ -34,6 +34,8 @@ import { WebsocketClient, } from 'socket';
 import { AttackTypes, Prediction, } from 'types/predictions';
 import PieCard from 'views/admin/default/components/PieCard';
 import { interval } from 'utils/timer';
+import { getFilteredPredictions, getPredictions } from 'predictionsRequests';
+import { DateTime } from 'luxon';
 
 const abort = new AbortController();
 
@@ -53,6 +55,12 @@ export default function Default() {
   });
   
   useEffect(() => {
+    // get the last 5 minutes
+      getFilteredPredictions({
+        dateMin: DateTime.now().minus({ minutes: 5 }).toISO(), 
+        dateMax: DateTime.now().toISO(),
+      });
+    
     WebsocketClient.addListener((p: string) => {
 			try {
 				const {attackType, attack,}: Prediction = JSON.parse(p);

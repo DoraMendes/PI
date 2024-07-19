@@ -35,6 +35,7 @@ const MultiSelectMenu = (props: MultiSelectMenuProps): JSX.Element => {
                   // Have to close, otherwise the defaultValue won't be reset correctly
                   // and so the UI won't immediately show the menu item options unselected.
                   onClose();
+                  props.onChange?.([]);
                 }}
               >
                 Clear all

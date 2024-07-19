@@ -19,17 +19,17 @@ export default function AppWrappers({ children }: { children: ReactNode }) {
   const router = useRouter();
   
   React.useEffect(() => {
-    if (auth.isLoaded && !auth.isSignedIn) clerk.redirectToSignIn();
-    else if (path.includes("/sign-in")) router.push('/admin/default');
-  }, []);
+    if (!clerk.loaded) return;
 
-  if (!auth.isLoaded) {
-    return <Spinner></Spinner>
-  }
+    if (!auth.isSignedIn) clerk.redirectToSignIn();
+    else if (path.includes("/sign-in")) router.push('/admin/default');
+  }, [clerk.loaded]);
   
   return (
     <CacheProvider>
-        <ChakraProvider theme={theme}>{children}</ChakraProvider>{' '}
+        <ChakraProvider theme={theme}>{clerk.loaded ? children : <div style={{ 
+          height: '100vh', width: "100vw", display: "grid", placeItems: "center"
+        }}><Spinner></Spinner></div>}</ChakraProvider>{' '}
     </CacheProvider>
   );
 }

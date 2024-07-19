@@ -77,19 +77,7 @@ export default function SignIn2() {
   const [password, setPassword] = React.useState('');
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
-
-
-  const submit = async (e: FormEvent) => {
-    try {
-      e.preventDefault();
-      await a.signIn.create({strategy: "password", identifier: username, password });
-      clerk.redirectToAfterSignIn();
-    } catch (error) {
-        console.log(error);
-        
-    }
-  }
-
+    
   return (
     <SignIn.Root>
       <SignIn.Step name="start">

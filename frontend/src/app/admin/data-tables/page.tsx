@@ -95,7 +95,7 @@ export default function DataTables() {
 			),
 			cell: (info) => (
 				<Text color={textColor} fontSize='sm' fontWeight='700'>
-					{info.getValue()}
+					{DateTime.fromISO(info.getValue()).toRelative()}
 				</Text>
 			)
 		}),
@@ -182,6 +182,7 @@ export default function DataTables() {
 
 	const [isOpenCalendar, setIsOpenCalendar] = React.useState(false);
 
+	const previousFilters = React.useRef<Partial<FiltersHistory>>({});
 	const [filters, setFilters] = React.useState<Partial<FiltersHistory>>({});
 	const [isFetching, setIsFetching] = React.useState<boolean>(false);
 
@@ -190,7 +191,8 @@ export default function DataTables() {
 
 		const { selectedDateRange, selectedAttack, selectedAttackType, selectedDestinationIP, selectedProtocol, selectedSourceIP} = filters
 		setIsFetching(true);
-		
+		previousFilters.current = filters;
+
 		getFilteredPredictions({
 			attackType: selectedAttackType, 
 			protocol: selectedProtocol,
@@ -244,7 +246,6 @@ export default function DataTables() {
 							selectRange
 						/>
 					)}
-					
 				</div>
 				<div className='filters__row'>
 					<p>Protocol</p>
@@ -298,7 +299,9 @@ export default function DataTables() {
 						<MultiSelectMenu onChange={(values) => setFilters({...filters, selectedAttackType: values as typeof AttackTypes[number][]})} label={filters.selectedAttackType?.map(getTranslation).join(', ') || 'All'} options={[...AttackTypes]} />
 					</Stack>
 				</div>
-				<button type='submit'>
+				<button type='submit' style={{
+					background: JSON.stringify(previousFilters.current) === JSON.stringify(filters) ? '' : 'blue'
+				}}>
 					Filter
 				</button>
 			</form>

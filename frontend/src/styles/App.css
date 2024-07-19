@@ -40,9 +40,22 @@ option {
 
 .filters__row--date > div {
     position: absolute;
-    top: 50px;
+    top: 80px;
     z-index: 1000;
     min-width: 100%;
     background-color: white;
     border: 1px solid var(--chakra-colors-gray-300)
+}
+
+
+.filters button[type="submit"] {
+    grid-column: 1 / -1;
+    border: 1px blue solid;
+    border-radius: 6px;
+    line-height: 2rem;
+}
+
+.filters button[type="submit"]:hover {
+    background: blue;
+    color: white;
 }
